@@ -1,4 +1,4 @@
-// Type definitions for Electron 2.0.0
+// Type definitions for Electron 2.0.1
 // Project: http://electron.atom.io/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -8186,10 +8186,25 @@ declare namespace Electron {
 
   interface SizeOptions {
     /**
+     * true to make the webview container automatically resize within the bounds
+     * specified by the attributes normal, min and max.
+     */
+    enableAutoSize?: boolean;
+    /**
      * Normal size of the page. This can be used in combination with the attribute to
      * manually resize the webview guest contents.
      */
-    normal?: Normal;
+    normal?: Size;
+    /**
+     * Minimum size of the page. This can be used in combination with the attribute to
+     * manually resize the webview guest contents.
+     */
+    min?: Size;
+    /**
+     * Maximium size of the page. This can be used in combination with the attribute to
+     * manually resize the webview guest contents.
+     */
+    max?: Size;
   }
 
   interface SourcesOptions {
@@ -8528,11 +8543,6 @@ declare namespace Electron {
      * Whether the media element can be rotated.
      */
     canRotate: boolean;
-  }
-
-  interface Normal {
-    width: number;
-    height: number;
   }
 
   interface Options {
