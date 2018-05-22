@@ -1,4 +1,4 @@
-// Type definitions for Electron 2.0.1
+// Type definitions for Electron 2.0.2
 // Project: http://electron.atom.io/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -204,7 +204,9 @@ declare namespace Electron {
      * event.preventDefault() will prevent the default behaviour, which is terminating
      * the application. Note: If application quit was initiated by
      * autoUpdater.quitAndInstall() then before-quit is emitted after emitting close
-     * event on all windows and closing them.
+     * event on all windows and closing them. Note: On Windows, this event will not be
+     * emitted if the app is closed due to a shutdown/restart of the system or a user
+     * logout.
      */
     on(event: 'before-quit', listener: (event: Event) => void): this;
     once(event: 'before-quit', listener: (event: Event) => void): this;
@@ -446,7 +448,9 @@ declare namespace Electron {
     removeListener(event: 'open-url', listener: (event: Event,
                                      url: string) => void): this;
     /**
-     * Emitted when the application is quitting.
+     * Emitted when the application is quitting. Note: On Windows, this event will not
+     * be emitted if the app is closed due to a shutdown/restart of the system or a
+     * user logout.
      */
     on(event: 'quit', listener: (event: Event,
                                  exitCode: number) => void): this;
@@ -587,7 +591,9 @@ declare namespace Electron {
      * Emitted when all windows have been closed and the application will quit. Calling
      * event.preventDefault() will prevent the default behaviour, which is terminating
      * the application. See the description of the window-all-closed event for the
-     * differences between the will-quit and window-all-closed events.
+     * differences between the will-quit and window-all-closed events. Note: On
+     * Windows, this event will not be emitted if the app is closed due to a
+     * shutdown/restart of the system or a user logout.
      */
     on(event: 'will-quit', listener: (event: Event) => void): this;
     once(event: 'will-quit', listener: (event: Event) => void): this;
@@ -659,9 +665,10 @@ declare namespace Electron {
     getGPUFeatureStatus(): GPUFeatureStatus;
     getJumpListSettings(): JumpListSettings;
     /**
-     * Note: When distributing your packaged app, you have to also ship the locales
-     * folder. Note: On Windows you have to call it after the ready events gets
-     * emitted.
+     * To set the locale, you'll want to use a command line switch at app startup,
+     * which may be found here. Note: When distributing your packaged app, you have to
+     * also ship the locales folder. Note: On Windows you have to call it after the
+     * ready events gets emitted.
      */
     getLocale(): string;
     /**
