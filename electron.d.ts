@@ -1,4 +1,4 @@
-// Type definitions for Electron 3.0.0-beta.2
+// Type definitions for Electron 3.0.0-beta.3
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -480,7 +480,7 @@ declare namespace Electron {
      * non-minimized. This event is guaranteed to be emitted after the ready event of
      * app gets emitted.
      */
-    on(event: 'second-instance', listener: (
+    on(event: 'second-instance', listener: (event: Event,
                                             /**
                                              * An array of the second instance's command line arguments
                                              */
@@ -489,7 +489,7 @@ declare namespace Electron {
                                              * The second instance's working directory
                                              */
                                             workingDirectory: string) => void): this;
-    once(event: 'second-instance', listener: (
+    once(event: 'second-instance', listener: (event: Event,
                                             /**
                                              * An array of the second instance's command line arguments
                                              */
@@ -498,7 +498,7 @@ declare namespace Electron {
                                              * The second instance's working directory
                                              */
                                             workingDirectory: string) => void): this;
-    addListener(event: 'second-instance', listener: (
+    addListener(event: 'second-instance', listener: (event: Event,
                                             /**
                                              * An array of the second instance's command line arguments
                                              */
@@ -507,7 +507,7 @@ declare namespace Electron {
                                              * The second instance's working directory
                                              */
                                             workingDirectory: string) => void): this;
-    removeListener(event: 'second-instance', listener: (
+    removeListener(event: 'second-instance', listener: (event: Event,
                                             /**
                                              * An array of the second instance's command line arguments
                                              */
