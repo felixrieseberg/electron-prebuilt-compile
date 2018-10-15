@@ -1,4 +1,4 @@
-// Type definitions for Electron 4.0.0-beta.2
+// Type definitions for Electron 4.0.0-beta.3
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -8783,7 +8783,7 @@ declare namespace Electron {
     /**
      * true to open the app as hidden. Defaults to false. The user can edit this
      * setting from the System Preferences so
-     * app.getLoginItemStatus().wasOpenedAsHidden should be checked when the app is
+     * app.getLoginItemSettings().wasOpenedAsHidden should be checked when the app is
      * opened to know the current value. This setting is not available on .
      */
     openAsHidden?: boolean;
