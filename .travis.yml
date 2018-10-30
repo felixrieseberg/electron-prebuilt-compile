@@ -13,7 +13,7 @@ before_install:
   - npm config set no-progress
 
 install:
-  - npm install
+  - npm install --ignore-scripts
 
 script:
   - npm run autorelease

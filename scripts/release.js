@@ -27,7 +27,7 @@ function updatePackageJson(version = '') {
  */
 function runNpmInstall(version = '') {
   console.log(`Now running "npm install"`)
-  console.log(execSync('npm install --no-progress', EXEC_OTPS).toString())
+  console.log(execSync('npm install --no-progress --ignore-scripts', EXEC_OTPS).toString())
 }
 
 /**
