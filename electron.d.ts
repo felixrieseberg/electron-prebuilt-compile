@@ -1,4 +1,4 @@
-// Type definitions for Electron 3.0.2
+// Type definitions for Electron 3.0.5
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -1736,7 +1736,8 @@ declare namespace Electron {
      */
     setSimpleFullScreen(flag: boolean): void;
     /**
-     * Resizes the window to width and height.
+     * Resizes the window to width and height. If width or height are below any set
+     * minimum size constraints the window will snap to its minimum size.
      */
     setSize(width: number, height: number, animate?: boolean): void;
     /**
@@ -8516,7 +8517,7 @@ declare namespace Electron {
     /**
      * true to open the app as hidden. Defaults to false. The user can edit this
      * setting from the System Preferences so
-     * app.getLoginItemStatus().wasOpenedAsHidden should be checked when the app is
+     * app.getLoginItemSettings().wasOpenedAsHidden should be checked when the app is
      * opened to know the current value. This setting is not available on .
      */
     openAsHidden?: boolean;
