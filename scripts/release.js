@@ -35,7 +35,7 @@ function runNpmInstall(version = '') {
  */
 function runNpmPublish(version = '') {
   console.log(`Now running "npm publish"`)
-  console.log(execSync('npm publish --dry-run', EXEC_OTPS).toString())
+  console.log(execSync('npm publish', EXEC_OTPS).toString())
 }
 
 /**
@@ -50,9 +50,9 @@ function runGit(version = '') {
   console.log(`Now running "git add"`)
   console.log(execSync(`git add .`, EXEC_OTPS).toString())
   console.log(`Now running "git commit"`)
-  console.log(execSync(`git commit --dry-run -m "Update: Electron to ${version}"`, EXEC_OTPS).toString())
+  console.log(execSync(`git commit -m "Update: Electron to ${version}"`, EXEC_OTPS).toString())
   console.log(`Now running "git push"`)
-  console.log(execSync(`git push --dry-run ${remote} ${branch}`, EXEC_OTPS).toString())
+  console.log(execSync(`git push ${remote} ${branch}`, EXEC_OTPS).toString())
 }
 
 /**
