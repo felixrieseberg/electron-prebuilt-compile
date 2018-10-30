@@ -1,4 +1,4 @@
-// Type definitions for Electron 2.0.8
+// Type definitions for Electron 2.0.9
 // Project: http://electron.atom.io/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -496,6 +496,17 @@ declare namespace Electron {
                                                       url: string,
                                                       certificateList: Certificate[],
                                                       callback: (certificate?: Certificate) => void) => void): this;
+    /**
+     * Emitted when Electron has created a new session.
+     */
+    on(event: 'session-created', listener: (event: Event,
+                                            session: Session) => void): this;
+    once(event: 'session-created', listener: (event: Event,
+                                            session: Session) => void): this;
+    addListener(event: 'session-created', listener: (event: Event,
+                                            session: Session) => void): this;
+    removeListener(event: 'session-created', listener: (event: Event,
+                                            session: Session) => void): this;
     /**
      * Emitted when Handoff is about to be resumed on another device. If you need to
      * update the state to be transferred, you should call event.preventDefault()
@@ -4541,7 +4552,7 @@ declare namespace Electron {
     /**
      * Sets the context menu for this icon.
      */
-    setContextMenu(menu: Menu): void;
+    setContextMenu(menu: Menu | null): void;
     /**
      * Sets when the tray's icon background becomes highlighted (in blue). Note: You
      * can use highlightMode with a BrowserWindow by toggling between 'never' and
@@ -8746,7 +8757,7 @@ declare namespace Electron {
      * of this app. Useful for passing small bits of data down to renderer process
      * preload scripts.
      */
-    additionArguments?: string[];
+    additionalArguments?: string[];
   }
 
   interface DefaultFontFamily {
