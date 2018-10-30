@@ -26,7 +26,7 @@ function updatePackageJson(version = '') {
  */
 function runNpmInstall(version = '') {
   console.log(`Now running "npm install"`)
-  console.log(execSync('npm install --no-progress', { cwd: PACKAGE_ROOT }))
+  console.log(execSync('npm install --no-progress', { cwd: PACKAGE_ROOT }).toString())
 }
 
 /**
@@ -34,7 +34,7 @@ function runNpmInstall(version = '') {
  */
 function runNpmPublish(version = '') {
   console.log(`Now running "npm publish"`)
-  console.log(execSync('npm publish --dry-run', { cwd: PACKAGE_ROOT }))
+  console.log(execSync('npm publish --dry-run', { cwd: PACKAGE_ROOT }).toString())
 }
 
 /**
@@ -42,11 +42,11 @@ function runNpmPublish(version = '') {
  */
 function runGit(version = '') {
   console.log(`Now running "git add"`)
-  console.log(execSync(`git add .`, { cwd: PACKAGE_ROOT }))
+  console.log(execSync(`git add .`, { cwd: PACKAGE_ROOT }).toString())
   console.log(`Now running "git commit"`)
-  console.log(execSync(`git commit --dry-run -m "Update: Electron to ${version}"`, { cwd: PACKAGE_ROOT }))
+  console.log(execSync(`git commit --dry-run -m "Update: Electron to ${version}"`, { cwd: PACKAGE_ROOT }).toString())
   console.log(`Now running "git push"`)
-  console.log(execSync(`git push --dry-run`, { cwd: PACKAGE_ROOT }))
+  console.log(execSync(`git push --dry-run`, { cwd: PACKAGE_ROOT }).toString())
 }
 
 /**
@@ -56,6 +56,10 @@ function runGit(version = '') {
  */
 function releaseVersions(versions = []) {
   versions.forEach((version) => {
+    console.log(`------------------------------------------`)
+    console.log(`#        Now releasing ${version}        #`)
+    console.log(`------------------------------------------`)
+
     updatePackageJson(version)
     runNpmInstall(version)
     runNpmPublish(version)
