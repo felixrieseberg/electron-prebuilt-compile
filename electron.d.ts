@@ -1,4 +1,4 @@
-// Type definitions for Electron 2.0.6
+// Type definitions for Electron 2.0.8-nightly.20180819
 // Project: http://electron.atom.io/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -8104,6 +8104,7 @@ declare namespace Electron {
 
   interface ResourceUsage {
     images: MemoryUsageDetails;
+    scripts: MemoryUsageDetails;
     cssStyleSheets: MemoryUsageDetails;
     xslStyleSheets: MemoryUsageDetails;
     fonts: MemoryUsageDetails;
