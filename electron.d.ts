@@ -1,4 +1,4 @@
-// Type definitions for Electron 4.0.0-nightly.20181006
+// Type definitions for Electron 4.0.0-nightly.20181010
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -695,6 +695,11 @@ declare namespace Electron {
      */
     enableMixedSandbox(): void;
     /**
+     * Enables full sandbox mode on the app. This method can only be called before app
+     * is ready.
+     */
+    enableSandbox(): void;
+    /**
      * Exits immediately with exitCode. exitCode defaults to 0. All windows will be
      * closed immediately without asking user and the before-quit and will-quit events
      * will not be emitted.
@@ -713,12 +718,12 @@ declare namespace Electron {
      * Fetches a path's associated icon. On Windows, there a 2 kinds of icons: On Linux
      * and macOS, icons depend on the application associated with file mime type.
      */
-    getFileIcon(path: string, options: FileIconOptions, callback: (error: Error, icon: NativeImage) => void): void;
+    getFileIcon(path: string, callback: (error: Error, icon: NativeImage) => void): void;
     /**
      * Fetches a path's associated icon. On Windows, there a 2 kinds of icons: On Linux
      * and macOS, icons depend on the application associated with file mime type.
      */
-    getFileIcon(path: string, callback: (error: Error, icon: NativeImage) => void): void;
+    getFileIcon(path: string, options: FileIconOptions, callback: (error: Error, icon: NativeImage) => void): void;
     getGPUFeatureStatus(): GPUFeatureStatus;
     /**
      * For infoType equal to complete: Promise is fulfilled with Object containing all
@@ -1665,6 +1670,10 @@ declare namespace Electron {
      */
     setAutoHideMenuBar(hide: boolean): void;
     /**
+     * Sets the background color of the window. See Setting backgroundColor.
+     */
+    setBackgroundColor(backgroundColor: string): void;
+    /**
      * Resizes and moves the window to the supplied bounds
      */
     setBounds(bounds: Rectangle, animate?: boolean): void;
@@ -1818,7 +1827,8 @@ declare namespace Electron {
      */
     setSimpleFullScreen(flag: boolean): void;
     /**
-     * Resizes the window to width and height.
+     * Resizes the window to width and height. If width or height are below any set
+     * minimum size constraints the window will snap to its minimum size.
      */
     setSize(width: number, height: number, animate?: boolean): void;
     /**
@@ -7292,9 +7302,8 @@ declare namespace Electron {
     enableLargerThanScreen?: boolean;
     /**
      * Window's background color as a hexadecimal value, like #66CD00 or #FFF or
-     * #80FFFFFF (alpha is supported). Default is #FFF (white). If transparent is set
-     * to true, only values with transparent (#00-------) or opaque (#FF-----) alpha
-     * values are respected.
+     * #80FFFFFF (alpha is supported if transparent is set to true). Default is #FFF
+     * (white).
      */
     backgroundColor?: string;
     /**
