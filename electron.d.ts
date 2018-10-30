@@ -1,4 +1,4 @@
-// Type definitions for Electron 2.0.10
+// Type definitions for Electron 2.0.11
 // Project: http://electron.atom.io/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -117,7 +117,7 @@ declare namespace Electron {
 
   interface App extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/app
+    // Docs: http://electronjs.org/docs/api/app
 
     /**
      * Emitted when Chrome's accessibility support changes. This event fires when
@@ -900,7 +900,7 @@ declare namespace Electron {
 
   interface AutoUpdater extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/auto-updater
+    // Docs: http://electronjs.org/docs/api/auto-updater
 
     /**
      * Emitted when checking if an update has started.
@@ -979,7 +979,7 @@ declare namespace Electron {
 
   interface BluetoothDevice {
 
-    // Docs: http://electron.atom.io/docs/api/structures/bluetooth-device
+    // Docs: http://electronjs.org/docs/api/structures/bluetooth-device
 
     deviceId: string;
     deviceName: string;
@@ -987,7 +987,7 @@ declare namespace Electron {
 
   class BrowserView extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/browser-view
+    // Docs: http://electronjs.org/docs/api/browser-view
 
     constructor(options?: BrowserViewConstructorOptions);
     static fromId(id: number): BrowserView;
@@ -1012,7 +1012,7 @@ declare namespace Electron {
 
   class BrowserWindow extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/browser-window
+    // Docs: http://electronjs.org/docs/api/browser-window
 
     /**
      * Emitted when an App Command is invoked. These are typically related to keyboard
@@ -1740,7 +1740,7 @@ declare namespace Electron {
 
   class BrowserWindowProxy extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/browser-window-proxy
+    // Docs: http://electronjs.org/docs/api/browser-window-proxy
 
     /**
      * Removes focus from the child window.
@@ -1773,7 +1773,7 @@ declare namespace Electron {
 
   interface Certificate {
 
-    // Docs: http://electron.atom.io/docs/api/structures/certificate
+    // Docs: http://electronjs.org/docs/api/structures/certificate
 
     /**
      * PEM encoded data
@@ -1819,7 +1819,7 @@ declare namespace Electron {
 
   interface CertificatePrincipal {
 
-    // Docs: http://electron.atom.io/docs/api/structures/certificate-principal
+    // Docs: http://electronjs.org/docs/api/structures/certificate-principal
 
     /**
      * Common Name
@@ -1849,7 +1849,7 @@ declare namespace Electron {
 
   class ClientRequest extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/client-request
+    // Docs: http://electronjs.org/docs/api/client-request
 
     /**
      * Emitted when the request is aborted. The abort event will not be fired if the
@@ -2001,7 +2001,7 @@ declare namespace Electron {
 
   interface Clipboard extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/clipboard
+    // Docs: http://electronjs.org/docs/api/clipboard
 
     availableFormats(type?: string): string[];
     /**
@@ -2061,7 +2061,7 @@ declare namespace Electron {
 
   interface ContentTracing extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/content-tracing
+    // Docs: http://electronjs.org/docs/api/content-tracing
 
     /**
      * Get the current monitoring traced data. Child processes typically cache trace
@@ -2131,7 +2131,7 @@ declare namespace Electron {
 
   interface Cookie {
 
-    // Docs: http://electron.atom.io/docs/api/structures/cookie
+    // Docs: http://electronjs.org/docs/api/structures/cookie
 
     /**
      * The domain of the cookie.
@@ -2175,7 +2175,7 @@ declare namespace Electron {
 
   class Cookies extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/cookies
+    // Docs: http://electronjs.org/docs/api/cookies
 
     /**
      * Emitted when a cookie is changed because it was added, edited, removed, or
@@ -2256,7 +2256,7 @@ declare namespace Electron {
 
   interface CPUUsage {
 
-    // Docs: http://electron.atom.io/docs/api/structures/cpu-usage
+    // Docs: http://electronjs.org/docs/api/structures/cpu-usage
 
     /**
      * The number of average idle cpu wakeups per second since the last call to
@@ -2271,7 +2271,7 @@ declare namespace Electron {
 
   interface CrashReport {
 
-    // Docs: http://electron.atom.io/docs/api/structures/crash-report
+    // Docs: http://electronjs.org/docs/api/structures/crash-report
 
     date: Date;
     id: string;
@@ -2279,7 +2279,7 @@ declare namespace Electron {
 
   interface CrashReporter extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/crash-reporter
+    // Docs: http://electronjs.org/docs/api/crash-reporter
 
     /**
      * Set an extra parameter to be sent with the crash report. The values specified
@@ -2347,7 +2347,7 @@ declare namespace Electron {
 
   class Debugger extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/debugger
+    // Docs: http://electronjs.org/docs/api/debugger
 
     /**
      * Emitted when debugging session is terminated. This happens either when
@@ -2433,7 +2433,7 @@ declare namespace Electron {
 
   interface DesktopCapturer extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/desktop-capturer
+    // Docs: http://electronjs.org/docs/api/desktop-capturer
 
     /**
      * Starts gathering information about all available desktop media sources, and
@@ -2446,7 +2446,7 @@ declare namespace Electron {
 
   interface DesktopCapturerSource {
 
-    // Docs: http://electron.atom.io/docs/api/structures/desktop-capturer-source
+    // Docs: http://electronjs.org/docs/api/structures/desktop-capturer-source
 
     /**
      * The identifier of a window or screen that can be used as a chromeMediaSourceId
@@ -2456,8 +2456,8 @@ declare namespace Electron {
      */
     id: string;
     /**
-     * A screen source will be named either Entire Screen or Screen <index>, while the
-     * name of a window source will match the window title.
+     * A screen source will be named either Entire Screen or Screen , while the name of
+     * a window source will match the window title.
      */
     name: string;
     /**
@@ -2471,7 +2471,7 @@ declare namespace Electron {
 
   interface Dialog extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/dialog
+    // Docs: http://electronjs.org/docs/api/dialog
 
     /**
      * On macOS, this displays a modal dialog that shows a message and certificate
@@ -2566,7 +2566,7 @@ declare namespace Electron {
 
   interface Display {
 
-    // Docs: http://electron.atom.io/docs/api/structures/display
+    // Docs: http://electronjs.org/docs/api/structures/display
 
     bounds: Rectangle;
     /**
@@ -2592,7 +2592,7 @@ declare namespace Electron {
 
   class DownloadItem extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/download-item
+    // Docs: http://electronjs.org/docs/api/download-item
 
     /**
      * Emitted when the download is in a terminal state. This includes a completed
@@ -2695,7 +2695,7 @@ declare namespace Electron {
 
   interface FileFilter {
 
-    // Docs: http://electron.atom.io/docs/api/structures/file-filter
+    // Docs: http://electronjs.org/docs/api/structures/file-filter
 
     extensions: string[];
     name: string;
@@ -2703,7 +2703,7 @@ declare namespace Electron {
 
   interface GlobalShortcut extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/global-shortcut
+    // Docs: http://electronjs.org/docs/api/global-shortcut
 
     /**
      * When the accelerator is already taken by other applications, this call will
@@ -2731,7 +2731,7 @@ declare namespace Electron {
 
   interface GPUFeatureStatus {
 
-    // Docs: http://electron.atom.io/docs/api/structures/gpu-feature-status
+    // Docs: http://electronjs.org/docs/api/structures/gpu-feature-status
 
     /**
      * Canvas
@@ -2789,7 +2789,7 @@ declare namespace Electron {
 
   interface InAppPurchase extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/in-app-purchase
+    // Docs: http://electronjs.org/docs/api/in-app-purchase
 
     /**
      * Emitted when one or more transactions have been updated.
@@ -2821,7 +2821,7 @@ declare namespace Electron {
 
   class IncomingMessage extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/incoming-message
+    // Docs: http://electronjs.org/docs/api/incoming-message
 
     /**
      * Emitted when a request has been canceled during an ongoing HTTP transaction.
@@ -2882,7 +2882,7 @@ declare namespace Electron {
 
   interface IOCounters {
 
-    // Docs: http://electron.atom.io/docs/api/structures/io-counters
+    // Docs: http://electronjs.org/docs/api/structures/io-counters
 
     /**
      * Then number of I/O other operations.
@@ -2912,7 +2912,7 @@ declare namespace Electron {
 
   interface IpcMain extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/ipc-main
+    // Docs: http://electronjs.org/docs/api/ipc-main
 
     /**
      * Listens to channel, when a new message arrives listener would be called with
@@ -2937,7 +2937,7 @@ declare namespace Electron {
 
   interface IpcRenderer extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/ipc-renderer
+    // Docs: http://electronjs.org/docs/api/ipc-renderer
 
     /**
      * Listens to channel, when a new message arrives listener would be called with
@@ -2987,7 +2987,7 @@ declare namespace Electron {
 
   interface JumpListCategory {
 
-    // Docs: http://electron.atom.io/docs/api/structures/jump-list-category
+    // Docs: http://electronjs.org/docs/api/structures/jump-list-category
 
     /**
      * Array of objects if type is tasks or custom, otherwise it should be omitted.
@@ -3005,7 +3005,7 @@ declare namespace Electron {
 
   interface JumpListItem {
 
-    // Docs: http://electron.atom.io/docs/api/structures/jump-list-item
+    // Docs: http://electronjs.org/docs/api/structures/jump-list-item
 
     /**
      * The command line arguments when program is executed. Should only be set if type
@@ -3052,7 +3052,7 @@ declare namespace Electron {
 
   interface MemoryInfo {
 
-    // Docs: http://electron.atom.io/docs/api/structures/memory-info
+    // Docs: http://electronjs.org/docs/api/structures/memory-info
 
     /**
      * The maximum amount of memory that has ever been pinned to actual physical RAM.
@@ -3081,7 +3081,7 @@ declare namespace Electron {
 
   interface MemoryUsageDetails {
 
-    // Docs: http://electron.atom.io/docs/api/structures/memory-usage-details
+    // Docs: http://electronjs.org/docs/api/structures/memory-usage-details
 
     count: number;
     liveSize: number;
@@ -3090,7 +3090,7 @@ declare namespace Electron {
 
   class Menu {
 
-    // Docs: http://electron.atom.io/docs/api/menu
+    // Docs: http://electronjs.org/docs/api/menu
 
     /**
      * Emitted when a popup is closed either manually or with menu.closePopup().
@@ -3155,7 +3155,7 @@ declare namespace Electron {
 
   class MenuItem {
 
-    // Docs: http://electron.atom.io/docs/api/menu-item
+    // Docs: http://electronjs.org/docs/api/menu-item
 
     constructor(options: MenuItemConstructorOptions);
     checked: boolean;
@@ -3167,7 +3167,7 @@ declare namespace Electron {
 
   interface MimeTypedBuffer {
 
-    // Docs: http://electron.atom.io/docs/api/structures/mime-typed-buffer
+    // Docs: http://electronjs.org/docs/api/structures/mime-typed-buffer
 
     /**
      * The actual Buffer content
@@ -3181,7 +3181,7 @@ declare namespace Electron {
 
   class NativeImage {
 
-    // Docs: http://electron.atom.io/docs/api/native-image
+    // Docs: http://electronjs.org/docs/api/native-image
 
     /**
      * Creates an empty NativeImage instance.
@@ -3248,7 +3248,7 @@ declare namespace Electron {
 
   interface Net extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/net
+    // Docs: http://electronjs.org/docs/api/net
 
     /**
      * Creates a ClientRequest instance using the provided options which are directly
@@ -3261,7 +3261,7 @@ declare namespace Electron {
 
   class Notification extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/notification
+    // Docs: http://electronjs.org/docs/api/notification
 
     on(event: 'action', listener: (event: Event,
                                    /**
@@ -3351,7 +3351,7 @@ declare namespace Electron {
 
   interface NotificationAction {
 
-    // Docs: http://electron.atom.io/docs/api/structures/notification-action
+    // Docs: http://electronjs.org/docs/api/structures/notification-action
 
     /**
      * The label for the given action.
@@ -3365,7 +3365,7 @@ declare namespace Electron {
 
   interface Point {
 
-    // Docs: http://electron.atom.io/docs/api/structures/point
+    // Docs: http://electronjs.org/docs/api/structures/point
 
     x: number;
     y: number;
@@ -3373,7 +3373,7 @@ declare namespace Electron {
 
   interface PowerMonitor extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/power-monitor
+    // Docs: http://electronjs.org/docs/api/power-monitor
 
     /**
      * Emitted when the system changes to AC power.
@@ -3417,7 +3417,7 @@ declare namespace Electron {
 
   interface PowerSaveBlocker extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/power-save-blocker
+    // Docs: http://electronjs.org/docs/api/power-save-blocker
 
     isStarted(id: number): boolean;
     /**
@@ -3439,7 +3439,7 @@ declare namespace Electron {
 
   interface PrinterInfo {
 
-    // Docs: http://electron.atom.io/docs/api/structures/printer-info
+    // Docs: http://electronjs.org/docs/api/structures/printer-info
 
     description: string;
     isDefault: boolean;
@@ -3449,7 +3449,7 @@ declare namespace Electron {
 
   interface ProcessMetric {
 
-    // Docs: http://electron.atom.io/docs/api/structures/process-metric
+    // Docs: http://electronjs.org/docs/api/structures/process-metric
 
     /**
      * CPU usage of the process.
@@ -3471,7 +3471,7 @@ declare namespace Electron {
 
   interface Protocol extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/protocol
+    // Docs: http://electronjs.org/docs/api/protocol
 
     /**
      * Intercepts scheme protocol and uses handler as the protocol's new handler which
@@ -3581,7 +3581,7 @@ declare namespace Electron {
 
   interface Rectangle {
 
-    // Docs: http://electron.atom.io/docs/api/structures/rectangle
+    // Docs: http://electronjs.org/docs/api/structures/rectangle
 
     /**
      * The height of the rectangle (must be an integer)
@@ -3603,7 +3603,7 @@ declare namespace Electron {
 
   interface Remote extends MainInterface {
 
-    // Docs: http://electron.atom.io/docs/api/remote
+    // Docs: http://electronjs.org/docs/api/remote
 
     getCurrentWebContents(): WebContents;
     getCurrentWindow(): BrowserWindow;
@@ -3621,7 +3621,7 @@ declare namespace Electron {
 
   interface RemoveClientCertificate {
 
-    // Docs: http://electron.atom.io/docs/api/structures/remove-client-certificate
+    // Docs: http://electronjs.org/docs/api/structures/remove-client-certificate
 
     /**
      * Origin of the server whose associated client certificate must be removed from
@@ -3636,7 +3636,7 @@ declare namespace Electron {
 
   interface RemovePassword {
 
-    // Docs: http://electron.atom.io/docs/api/structures/remove-password
+    // Docs: http://electronjs.org/docs/api/structures/remove-password
 
     /**
      * When provided, the authentication info related to the origin will only be
@@ -3668,7 +3668,7 @@ declare namespace Electron {
 
   interface Screen extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/screen
+    // Docs: http://electronjs.org/docs/api/screen
 
     /**
      * Emitted when newDisplay has been added.
@@ -3722,7 +3722,7 @@ declare namespace Electron {
 
   interface ScrubberItem {
 
-    // Docs: http://electron.atom.io/docs/api/structures/scrubber-item
+    // Docs: http://electronjs.org/docs/api/structures/scrubber-item
 
     /**
      * The image to appear in this item
@@ -3736,7 +3736,7 @@ declare namespace Electron {
 
   interface SegmentedControlSegment {
 
-    // Docs: http://electron.atom.io/docs/api/structures/segmented-control-segment
+    // Docs: http://electronjs.org/docs/api/structures/segmented-control-segment
 
     /**
      * Whether this segment is selectable. Default: true
@@ -3754,7 +3754,7 @@ declare namespace Electron {
 
   class Session extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/session
+    // Docs: http://electronjs.org/docs/api/session
 
     /**
      * If partition starts with persist:, the page will use a persistent session
@@ -3886,7 +3886,7 @@ declare namespace Electron {
 
   interface Shell {
 
-    // Docs: http://electron.atom.io/docs/api/shell
+    // Docs: http://electronjs.org/docs/api/shell
 
     /**
      * Play the beep sound.
@@ -3926,7 +3926,7 @@ declare namespace Electron {
 
   interface ShortcutDetails {
 
-    // Docs: http://electron.atom.io/docs/api/structures/shortcut-details
+    // Docs: http://electronjs.org/docs/api/structures/shortcut-details
 
     /**
      * The Application User Model ID. Default is empty.
@@ -3962,7 +3962,7 @@ declare namespace Electron {
 
   interface Size {
 
-    // Docs: http://electron.atom.io/docs/api/structures/size
+    // Docs: http://electronjs.org/docs/api/structures/size
 
     height: number;
     width: number;
@@ -3970,7 +3970,7 @@ declare namespace Electron {
 
   interface StreamProtocolResponse {
 
-    // Docs: http://electron.atom.io/docs/api/structures/stream-protocol-response
+    // Docs: http://electronjs.org/docs/api/structures/stream-protocol-response
 
     /**
      * A Node.js readable stream representing the response body
@@ -3988,7 +3988,7 @@ declare namespace Electron {
 
   interface SystemPreferences extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/system-preferences
+    // Docs: http://electronjs.org/docs/api/system-preferences
 
     on(event: 'accent-color-changed', listener: (event: Event,
                                                  /**
@@ -4103,7 +4103,7 @@ declare namespace Electron {
 
   interface Task {
 
-    // Docs: http://electron.atom.io/docs/api/structures/task
+    // Docs: http://electronjs.org/docs/api/structures/task
 
     /**
      * The command line arguments when program is executed.
@@ -4138,7 +4138,7 @@ declare namespace Electron {
 
   interface ThumbarButton {
 
-    // Docs: http://electron.atom.io/docs/api/structures/thumbar-button
+    // Docs: http://electronjs.org/docs/api/structures/thumbar-button
 
     click: Function;
     /**
@@ -4158,7 +4158,7 @@ declare namespace Electron {
 
   class TouchBarButton extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-button
+    // Docs: http://electronjs.org/docs/api/touch-bar-button
 
     constructor(options: TouchBarButtonConstructorOptions);
     backgroundColor: string;
@@ -4168,7 +4168,7 @@ declare namespace Electron {
 
   class TouchBarColorPicker extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-color-picker
+    // Docs: http://electronjs.org/docs/api/touch-bar-color-picker
 
     constructor(options: TouchBarColorPickerConstructorOptions);
     availableColors: string[];
@@ -4177,14 +4177,14 @@ declare namespace Electron {
 
   class TouchBarGroup extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-group
+    // Docs: http://electronjs.org/docs/api/touch-bar-group
 
     constructor(options: TouchBarGroupConstructorOptions);
   }
 
   class TouchBarLabel extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-label
+    // Docs: http://electronjs.org/docs/api/touch-bar-label
 
     constructor(options: TouchBarLabelConstructorOptions);
     label: string;
@@ -4193,7 +4193,7 @@ declare namespace Electron {
 
   class TouchBarPopover extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-popover
+    // Docs: http://electronjs.org/docs/api/touch-bar-popover
 
     constructor(options: TouchBarPopoverConstructorOptions);
     icon: NativeImage;
@@ -4202,7 +4202,7 @@ declare namespace Electron {
 
   class TouchBarScrubber extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-scrubber
+    // Docs: http://electronjs.org/docs/api/touch-bar-scrubber
 
     constructor(options: TouchBarScrubberConstructorOptions);
     continuous: boolean;
@@ -4215,7 +4215,7 @@ declare namespace Electron {
 
   class TouchBarSegmentedControl extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-segmented-control
+    // Docs: http://electronjs.org/docs/api/touch-bar-segmented-control
 
     constructor(options: TouchBarSegmentedControlConstructorOptions);
     segments: SegmentedControlSegment[];
@@ -4225,7 +4225,7 @@ declare namespace Electron {
 
   class TouchBarSlider extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-slider
+    // Docs: http://electronjs.org/docs/api/touch-bar-slider
 
     constructor(options: TouchBarSliderConstructorOptions);
     label: string;
@@ -4236,14 +4236,14 @@ declare namespace Electron {
 
   class TouchBarSpacer extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar-spacer
+    // Docs: http://electronjs.org/docs/api/touch-bar-spacer
 
     constructor(options: TouchBarSpacerConstructorOptions);
   }
 
   class TouchBar extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/touch-bar
+    // Docs: http://electronjs.org/docs/api/touch-bar
 
     constructor(options: TouchBarConstructorOptions);
     escapeItem: (TouchBarButton | TouchBarColorPicker | TouchBarGroup | TouchBarLabel | TouchBarPopover | TouchBarScrubber | TouchBarSegmentedControl | TouchBarSlider | TouchBarSpacer | null);
@@ -4260,7 +4260,7 @@ declare namespace Electron {
 
   interface Transaction {
 
-    // Docs: http://electron.atom.io/docs/api/structures/transaction
+    // Docs: http://electronjs.org/docs/api/structures/transaction
 
     errorCode: number;
     errorMessage: string;
@@ -4277,7 +4277,7 @@ declare namespace Electron {
 
   class Tray extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/tray
+    // Docs: http://electronjs.org/docs/api/tray
 
     /**
      * Emitted when the tray balloon is clicked.
@@ -4580,7 +4580,7 @@ declare namespace Electron {
 
   interface UploadBlob {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-blob
+    // Docs: http://electronjs.org/docs/api/structures/upload-blob
 
     /**
      * UUID of blob data to upload.
@@ -4594,7 +4594,7 @@ declare namespace Electron {
 
   interface UploadData {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-data
+    // Docs: http://electronjs.org/docs/api/structures/upload-data
 
     /**
      * UUID of blob data. Use method to retrieve the data.
@@ -4612,7 +4612,7 @@ declare namespace Electron {
 
   interface UploadFile {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-file
+    // Docs: http://electronjs.org/docs/api/structures/upload-file
 
     /**
      * Path of file to be uploaded.
@@ -4638,7 +4638,7 @@ declare namespace Electron {
 
   interface UploadFileSystem {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-file-system
+    // Docs: http://electronjs.org/docs/api/structures/upload-file-system
 
     /**
      * FileSystem url to read data for upload.
@@ -4664,7 +4664,7 @@ declare namespace Electron {
 
   interface UploadRawData {
 
-    // Docs: http://electron.atom.io/docs/api/structures/upload-raw-data
+    // Docs: http://electronjs.org/docs/api/structures/upload-raw-data
 
     /**
      * Data to be uploaded.
@@ -4678,7 +4678,7 @@ declare namespace Electron {
 
   class WebContents extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/web-contents
+    // Docs: http://electronjs.org/docs/api/web-contents
 
     static fromId(id: number): WebContents;
     static getAllWebContents(): WebContents[];
@@ -4898,22 +4898,22 @@ declare namespace Electron {
      */
     on(event: 'did-attach-webview', listener: (event: Event,
                                                /**
-                                                * The guest web contents that is used by the `<webview>`.
+                                                * The guest web contents that is used by the `
                                                 */
                                                webContents: WebContents) => void): this;
     once(event: 'did-attach-webview', listener: (event: Event,
                                                /**
-                                                * The guest web contents that is used by the `<webview>`.
+                                                * The guest web contents that is used by the `
                                                 */
                                                webContents: WebContents) => void): this;
     addListener(event: 'did-attach-webview', listener: (event: Event,
                                                /**
-                                                * The guest web contents that is used by the `<webview>`.
+                                                * The guest web contents that is used by the `
                                                 */
                                                webContents: WebContents) => void): this;
     removeListener(event: 'did-attach-webview', listener: (event: Event,
                                                /**
-                                                * The guest web contents that is used by the `<webview>`.
+                                                * The guest web contents that is used by the `
                                                 */
                                                webContents: WebContents) => void): this;
     /**
@@ -5365,8 +5365,7 @@ declare namespace Electron {
                                                  */
                                                 webPreferences: any,
                                                 /**
-                                                 * The other `<webview>` parameters such as the `src` URL. This object can be
-                                                 * modified to adjust the parameters of the guest page.
+                                                 * The other `
                                                  */
                                                 params: any) => void): this;
     once(event: 'will-attach-webview', listener: (event: Event,
@@ -5376,8 +5375,7 @@ declare namespace Electron {
                                                  */
                                                 webPreferences: any,
                                                 /**
-                                                 * The other `<webview>` parameters such as the `src` URL. This object can be
-                                                 * modified to adjust the parameters of the guest page.
+                                                 * The other `
                                                  */
                                                 params: any) => void): this;
     addListener(event: 'will-attach-webview', listener: (event: Event,
@@ -5387,8 +5385,7 @@ declare namespace Electron {
                                                  */
                                                 webPreferences: any,
                                                 /**
-                                                 * The other `<webview>` parameters such as the `src` URL. This object can be
-                                                 * modified to adjust the parameters of the guest page.
+                                                 * The other `
                                                  */
                                                 params: any) => void): this;
     removeListener(event: 'will-attach-webview', listener: (event: Event,
@@ -5398,8 +5395,7 @@ declare namespace Electron {
                                                  */
                                                 webPreferences: any,
                                                 /**
-                                                 * The other `<webview>` parameters such as the `src` URL. This object can be
-                                                 * modified to adjust the parameters of the guest page.
+                                                 * The other `
                                                  */
                                                 params: any) => void): this;
     /**
@@ -5807,7 +5803,7 @@ declare namespace Electron {
 
   interface WebFrame extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/web-frame
+    // Docs: http://electronjs.org/docs/api/web-frame
 
     /**
      * Attempts to free memory that is no longer being used (like images from a
@@ -5898,7 +5894,7 @@ declare namespace Electron {
 
   class WebRequest extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/web-request
+    // Docs: http://electronjs.org/docs/api/web-request
 
     /**
      * The listener will be called with listener(details) when a server initiated
@@ -5992,7 +5988,7 @@ declare namespace Electron {
 
   interface WebSource {
 
-    // Docs: http://electron.atom.io/docs/api/structures/web-source
+    // Docs: http://electronjs.org/docs/api/structures/web-source
 
     code: string;
     /**
@@ -6004,7 +6000,7 @@ declare namespace Electron {
 
   interface WebviewTag extends HTMLElement {
 
-    // Docs: http://electron.atom.io/docs/api/webview-tag
+    // Docs: http://electronjs.org/docs/api/webview-tag
 
     /**
      * Fired when a load has committed. This includes navigation within the current
@@ -6738,7 +6734,9 @@ declare namespace Electron {
     enableLargerThanScreen?: boolean;
     /**
      * Window's background color as a hexadecimal value, like #66CD00 or #FFF or
-     * #80FFFFFF (alpha is supported). Default is #FFF (white).
+     * #80FFFFFF (alpha is supported). Default is #FFF (white). If transparent is set
+     * to true, only values with transparent (#00-------) or opaque (#FF-----) alpha
+     * values are respected.
      */
     backgroundColor?: string;
     /**
@@ -8745,11 +8743,11 @@ declare namespace Electron {
     nativeWindowOpen?: boolean;
     /**
      * Whether to enable the . Defaults to the value of the nodeIntegration option. The
-     * preload script configured for the <webview> will have node integration enabled
-     * when it is executed so you should ensure remote/untrusted content is not able to
-     * create a <webview> tag with a possibly malicious preload script. You can use the
+     * preload script configured for the will have node integration enabled when it is
+     * executed so you should ensure remote/untrusted content is not able to create a
+     * tag with a possibly malicious preload script. You can use the
      * will-attach-webview event on to strip away the preload script and to validate or
-     * alter the <webview>'s initial settings.
+     * alter the 's initial settings.
      */
     webviewTag?: boolean;
     /**
@@ -8816,7 +8814,7 @@ interface Document {
 declare namespace NodeJS {
   interface Process extends EventEmitter {
 
-    // Docs: http://electron.atom.io/docs/api/process
+    // Docs: http://electronjs.org/docs/api/process
 
     /**
      * Emitted when Electron has loaded its internal initialization script and is
