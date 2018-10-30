@@ -3,7 +3,7 @@ const path = require('path')
 const { execSync } = require('child_process')
 
 const PACKAGE_ROOT = path.join(__dirname, '..')
-const EXEC_OTPS = EXEC_OTPS
+const EXEC_OTPS = { cwd: PACKAGE_ROOT }
 
 /**
  * Update the package.json to a given version number
