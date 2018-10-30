@@ -1,4 +1,4 @@
-// Type definitions for Electron 3.0.5
+// Type definitions for Electron 3.0.6
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -545,14 +545,10 @@ declare namespace Electron {
     /**
      * Emitted when Electron has created a new session.
      */
-    on(event: 'session-created', listener: (event: Event,
-                                            session: Session) => void): this;
-    once(event: 'session-created', listener: (event: Event,
-                                            session: Session) => void): this;
-    addListener(event: 'session-created', listener: (event: Event,
-                                            session: Session) => void): this;
-    removeListener(event: 'session-created', listener: (event: Event,
-                                            session: Session) => void): this;
+    on(event: 'session-created', listener: (session: Session) => void): this;
+    once(event: 'session-created', listener: (session: Session) => void): this;
+    addListener(event: 'session-created', listener: (session: Session) => void): this;
+    removeListener(event: 'session-created', listener: (session: Session) => void): this;
     /**
      * Emitted when Handoff is about to be resumed on another device. If you need to
      * update the state to be transferred, you should call event.preventDefault()
