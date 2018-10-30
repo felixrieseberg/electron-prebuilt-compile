@@ -1,4 +1,4 @@
-// Type definitions for Electron 4.0.0-nightly.20180929
+// Type definitions for Electron 4.0.0-nightly.20181006
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -1093,6 +1093,17 @@ declare namespace Electron {
 
     // Docs: http://electronjs.org/docs/api/browser-window
 
+    /**
+     * Emitted when the window is set or unset to show always on top of other windows.
+     */
+    on(event: 'always-on-top-changed', listener: (event: Event,
+                                                  isAlwaysOnTop: boolean) => void): this;
+    once(event: 'always-on-top-changed', listener: (event: Event,
+                                                  isAlwaysOnTop: boolean) => void): this;
+    addListener(event: 'always-on-top-changed', listener: (event: Event,
+                                                  isAlwaysOnTop: boolean) => void): this;
+    removeListener(event: 'always-on-top-changed', listener: (event: Event,
+                                                  isAlwaysOnTop: boolean) => void): this;
     /**
      * Emitted when an App Command is invoked. These are typically related to keyboard
      * media keys or browser commands, as well as the "Back" button built into some
@@ -4184,6 +4195,7 @@ declare namespace Electron {
      */
     setUserAgent(userAgent: string, acceptLanguages?: string): void;
     cookies: Cookies;
+    netLog: NetLog;
     protocol: Protocol;
     webRequest: WebRequest;
   }
@@ -4378,9 +4390,11 @@ declare namespace Electron {
      * Gets the macOS appearance setting that is currently applied to your application,
      * maps to NSApplication.effectiveAppearance Please note that until Electron is
      * built targeting the 10.14 SDK, your application's effectiveAppearance will
-     * default to 'light' and won't inherit the OS preference. In the interim we have
-     * provided a helper method startAppLevelAppearanceTrackingOS() which emulates this
-     * behavior.
+     * default to 'light' and won't inherit the OS preference. In the interim in order
+     * for your application to inherit the OS preference you must set the
+     * NSRequiresAquaSystemAppearance key in your apps Info.plist to false.  If you are
+     * using electron-packager or electron-forge just set the enableDarwinDarkMode
+     * packager option to true.  See the Electron Packager API for more details.
      */
     getEffectiveAppearance(): ('dark' | 'light' | 'unknown');
     /**
@@ -4429,23 +4443,6 @@ declare namespace Electron {
      * of value. An exception is thrown if they don't. Some popular key and types are:
      */
     setUserDefault(key: string, type: string, value: string): void;
-    /**
-     * This is a helper method to make your application's "appearance" setting track
-     * the user's OS level appearance setting.  I.e. your app will have dark mode
-     * enabled if the user's system has dark mode enabled. You can track this automatic
-     * change with the appearance-changed event. Note: This method is exempt from our
-     * standard deprecation cycle and will be removed without deprecation in an
-     * upcoming major release of Electron as soon as we target the 10.14 SDK
-     */
-    startAppLevelAppearanceTrackingOS(): void;
-    /**
-     * This is a helper method to stop your application tracking the OS level
-     * appearance setting.  It is a no-op if you have not called
-     * startAppLevelAppearanceTrackingOS() Note: This method is exempt from our
-     * standard deprecation cycle and will be removed without deprecation in an
-     * upcoming major release of Electron as soon as we target the 10.14 SDK
-     */
-    stopAppLevelAppearanceTrackingOS(): void;
     /**
      * Same as subscribeNotification, but uses NSNotificationCenter for local defaults.
      * This is necessary for events such as NSUserDefaultsDidChangeNotification.
