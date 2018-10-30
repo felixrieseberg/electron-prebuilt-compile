@@ -1,4 +1,4 @@
-// Type definitions for Electron 3.0.0-nightly.20180821
+// Type definitions for Electron 3.0.2
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -1717,6 +1717,14 @@ declare namespace Electron {
      */
     setResizable(resizable: boolean): void;
     /**
+     * Setting a window shape determines the area within the window where the system
+     * permits drawing and user interaction. Outside of the given region, no pixels
+     * will be drawn and no mouse events will be registered. Mouse events outside of
+     * the region will not be received by that window, but will fall through to
+     * whatever is behind the window.
+     */
+    setShape(rects: Rectangle[]): void;
+    /**
      * Changes the attachment point for sheets on macOS. By default, sheets are
      * attached just below the window frame, but you may want to display them beneath a
      * HTML-rendered toolbar. For example:
@@ -2046,6 +2054,11 @@ declare namespace Electron {
      */
     followRedirect(): void;
     getHeader(name: string): Header;
+    /**
+     * You can use this method in conjunction with POST requests to get the progress of
+     * a file upload or other data transfer.
+     */
+    getUploadProgress(): UploadProgress;
     /**
      * Removes a previously set extra header name. This method can be called only
      * before first write. Trying to call it after the first write will throw an error.
@@ -4796,7 +4809,7 @@ declare namespace Electron {
     /**
      * Sets the context menu for this icon.
      */
-    setContextMenu(menu: Menu): void;
+    setContextMenu(menu: Menu | null): void;
     /**
      * Sets when the tray's icon background becomes highlighted (in blue). Note: You
      * can use highlightMode with a BrowserWindow by toggling between 'never' and
@@ -6043,10 +6056,6 @@ declare namespace Electron {
      */
     setLayoutZoomLevelLimits(minimumLevel: number, maximumLevel: number): void;
     /**
-     * Set the size of the page. This is only supported for <webview> guest contents.
-     */
-    setSize(options: SizeOptions): void;
-    /**
      * Overrides the user agent for this web page.
      */
     setUserAgent(userAgent: string): void;
@@ -6737,14 +6746,6 @@ declare namespace Electron {
      */
     disableblinkfeatures?: string;
     /**
-     * When this attribute is present the webview contents will be prevented from
-     * resizing when the webview element itself is resized. This can be used in
-     * combination with webContents.setSize to manually resize the webview contents in
-     * reaction to a window size change. This can make resizing faster compared to
-     * relying on the webview element bounds to automatically resize the contents.
-     */
-    disableguestresize?: string;
-    /**
      * When this attribute is present the guest page will have web security disabled.
      * Web security is enabled by default.
      */
@@ -6755,15 +6756,6 @@ declare namespace Electron {
      * RuntimeEnabledFeatures.json5 file.
      */
     enableblinkfeatures?: string;
-    /**
-     * A value that links the webview to a specific webContents. When a webview first
-     * loads a new webContents is created and this attribute is set to its instance
-     * identifier. Setting this attribute on a new or existing webview connects it to
-     * the existing webContents that currently renders in a different webview. The
-     * existing webview will see the destroy event and will then create a new
-     * webContents when a new url is loaded.
-     */
-    guestinstance?: string;
     /**
      * Sets the referrer URL for the guest page.
      */
@@ -7074,7 +7066,9 @@ declare namespace Electron {
     enableLargerThanScreen?: boolean;
     /**
      * Window's background color as a hexadecimal value, like #66CD00 or #FFF or
-     * #80FFFFFF (alpha is supported). Default is #FFF (white).
+     * #80FFFFFF (alpha is supported). Default is #FFF (white). If transparent is set
+     * to true, only values with transparent (#00-------) or opaque (#FF-----) alpha
+     * values are respected.
      */
     backgroundColor?: string;
     /**
@@ -8537,29 +8531,6 @@ declare namespace Electron {
     args?: string[];
   }
 
-  interface SizeOptions {
-    /**
-     * true to make the webview container automatically resize within the bounds
-     * specified by the attributes normal, min and max.
-     */
-    enableAutoSize?: boolean;
-    /**
-     * Normal size of the page. This can be used in combination with the attribute to
-     * manually resize the webview guest contents.
-     */
-    normal?: Size;
-    /**
-     * Minimum size of the page. This can be used in combination with the attribute to
-     * manually resize the webview guest contents.
-     */
-    min?: Size;
-    /**
-     * Maximium size of the page. This can be used in combination with the attribute to
-     * manually resize the webview guest contents.
-     */
-    max?: Size;
-  }
-
   interface SourcesOptions {
     /**
      * An array of Strings that lists the types of desktop sources to be captured,
@@ -8795,6 +8766,27 @@ declare namespace Electron {
 
   interface UpdateTargetUrlEvent extends Event {
     url: string;
+  }
+
+  interface UploadProgress {
+    /**
+     * Whether the request is currently active. If this is false no other properties
+     * will be set
+     */
+    active: boolean;
+    /**
+     * Whether the upload has started. If this is false both current and total will be
+     * set to 0.
+     */
+    started: boolean;
+    /**
+     * The number of bytes that have been uploaded so far
+     */
+    current: number;
+    /**
+     * The number of bytes that will be uploaded this request
+     */
+    total: number;
   }
 
   interface Versions {
