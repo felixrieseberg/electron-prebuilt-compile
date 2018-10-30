@@ -1,4 +1,4 @@
-// Type definitions for Electron 4.0.0-nightly.20180819
+// Type definitions for Electron 4.0.0-nightly.20180821
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -9302,6 +9302,11 @@ declare namespace NodeJS {
      * A String representing the path to the resources directory.
      */
     resourcesPath?: string;
+    /**
+     * A Boolean. When the renderer process is sandboxed, this property is true,
+     * otherwise it is undefined.
+     */
+    sandboxed?: boolean;
     /**
      * A Boolean that controls whether or not deprecation warnings will be thrown as
      * exceptions. Setting this to true will throw errors for deprecations. This
