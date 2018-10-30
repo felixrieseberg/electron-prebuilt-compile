@@ -25,6 +25,7 @@ function updatePackageJson(version = '') {
  * Run "npm install" in the package root
  */
 function runNpmInstall(version = '') {
+  console.log(`Now running "npm install"`)
   console.log(execSync('npm install --no-progress', { cwd: PACKAGE_ROOT }))
 }
 
@@ -32,6 +33,7 @@ function runNpmInstall(version = '') {
  * Run "npm publish" in the package root
  */
 function runNpmPublish(version = '') {
+  console.log(`Now running "npm publish"`)
   console.log(execSync('npm publish --dry-run', { cwd: PACKAGE_ROOT }))
 }
 
@@ -39,8 +41,11 @@ function runNpmPublish(version = '') {
  * Commit and push changes
  */
 function runGit(version = '') {
+  console.log(`Now running "git add"`)
   console.log(execSync(`git add .`, { cwd: PACKAGE_ROOT }))
+  console.log(`Now running "git commit"`)
   console.log(execSync(`git commit --dry-run -m "Update: Electron to ${version}"`, { cwd: PACKAGE_ROOT }))
+  console.log(`Now running "git push"`)
   console.log(execSync(`git push --dry-run`, { cwd: PACKAGE_ROOT }))
 }
 
