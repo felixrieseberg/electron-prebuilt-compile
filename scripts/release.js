@@ -44,7 +44,7 @@ function runNpmPublish(version = '') {
 function runGit(version = '') {
   const token = process.env.GITHUB_TOKEN
   const repo = process.env.GITHUB_REPO
-  const remote = `https://${token}@$github.com/${repo}.git`
+  const remote = `https://${token}@github.com/${repo}.git`
   const branch = `master:master`
 
   console.log(`Now running "git add"`)
