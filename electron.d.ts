@@ -1,4 +1,4 @@
-// Type definitions for Electron 3.0.14
+// Type definitions for Electron 3.1.0
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -4091,6 +4091,7 @@ declare namespace Electron {
      */
     setUserAgent(userAgent: string, acceptLanguages?: string): void;
     cookies: Cookies;
+    netLog: NetLog;
     protocol: Protocol;
     webRequest: WebRequest;
   }
