@@ -1,4 +1,4 @@
-// Type definitions for Electron 3.0.15
+// Type definitions for Electron 3.1.3
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -4093,6 +4093,7 @@ declare namespace Electron {
      */
     setUserAgent(userAgent: string, acceptLanguages?: string): void;
     cookies: Cookies;
+    netLog: NetLog;
     protocol: Protocol;
     webRequest: WebRequest;
   }
@@ -6308,14 +6309,14 @@ declare namespace Electron {
      * connection is made to the server, but before any http data is sent. The callback
      * has to be called with an response object.
      */
-    onBeforeSendHeaders(filter: OnBeforeSendHeadersFilter, listener: Function): void;
+    onBeforeSendHeaders(filter: OnBeforeSendHeadersFilter, listener: (details: OnBeforeSendHeadersDetails, callback: (response: OnBeforeSendHeadersResponse) => void) => void): void;
     /**
      * The listener will be called with listener(details, callback) before sending an
      * HTTP request, once the request headers are available. This may occur after a TCP
      * connection is made to the server, but before any http data is sent. The callback
      * has to be called with an response object.
      */
-    onBeforeSendHeaders(listener: Function): void;
+    onBeforeSendHeaders(listener: (details: OnBeforeSendHeadersDetails, callback: (response: OnBeforeSendHeadersResponse) => void) => void): void;
     /**
      * The listener will be called with listener(details) when a request is completed.
      */
@@ -6337,13 +6338,13 @@ declare namespace Electron {
      * headers of a request have been received. The callback has to be called with an
      * response object.
      */
-    onHeadersReceived(filter: OnHeadersReceivedFilter, listener: Function): void;
+    onHeadersReceived(filter: OnHeadersReceivedFilter, listener: (details: OnHeadersReceivedDetails, callback: (response: OnHeadersReceivedResponse) => void) => void): void;
     /**
      * The listener will be called with listener(details, callback) when HTTP response
      * headers of a request have been received. The callback has to be called with an
      * response object.
      */
-    onHeadersReceived(listener: Function): void;
+    onHeadersReceived(listener: (details: OnHeadersReceivedDetails, callback: (response: OnHeadersReceivedResponse) => void) => void): void;
     /**
      * The listener will be called with listener(details) when first byte of the
      * response body is received. For HTTP requests, this means that the status line
@@ -7869,6 +7870,11 @@ declare namespace Electron {
      */
     checked?: boolean;
     /**
+     * If false, the accelerator won't be registered with the system, but it will still
+     * be displayed. Defaults to true.
+     */
+    registerAccelerator?: boolean;
+    /**
      * Should be specified for submenu type menu items. If submenu is specified, the
      * type: 'submenu' can be omitted. If the value is not a then it will be
      * automatically converted to one using Menu.buildFromTemplate.
@@ -8055,12 +8061,30 @@ declare namespace Electron {
     urls: string[];
   }
 
+  interface OnBeforeSendHeadersDetails {
+    id: number;
+    url: string;
+    method: string;
+    webContentsId?: number;
+    resourceType: string;
+    timestamp: number;
+    requestHeaders: RequestHeaders;
+  }
+
   interface OnBeforeSendHeadersFilter {
     /**
      * Array of URL patterns that will be used to filter out the requests that do not
      * match the URL patterns.
      */
     urls: string[];
+  }
+
+  interface OnBeforeSendHeadersResponse {
+    cancel?: boolean;
+    /**
+     * When provided, request will be made with these headers.
+     */
+    requestHeaders?: RequestHeaders;
   }
 
   interface OnCompletedDetails {
@@ -8106,12 +8130,37 @@ declare namespace Electron {
     urls: string[];
   }
 
+  interface OnHeadersReceivedDetails {
+    id: number;
+    url: string;
+    method: string;
+    webContentsId?: number;
+    resourceType: string;
+    timestamp: number;
+    statusLine: string;
+    statusCode: number;
+    responseHeaders: ResponseHeaders;
+  }
+
   interface OnHeadersReceivedFilter {
     /**
      * Array of URL patterns that will be used to filter out the requests that do not
      * match the URL patterns.
      */
     urls: string[];
+  }
+
+  interface OnHeadersReceivedResponse {
+    cancel: boolean;
+    /**
+     * When provided, the server is assumed to have responded with these headers.
+     */
+    responseHeaders?: ResponseHeaders;
+    /**
+     * Should be provided when overriding responseHeaders to change header status
+     * otherwise original response header's status will be used.
+     */
+    statusLine?: string;
   }
 
   interface OnResponseStartedDetails {
