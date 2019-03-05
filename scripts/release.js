@@ -35,8 +35,12 @@ function runNpmInstall(version = '') {
  * Run "npm publish" in the package root
  */
 function runNpmPublish(version = '') {
-  console.log(`Now running "npm publish"`)
-  console.log(execSync('npm publish', EXEC_OTPS).toString())
+  let cmd = 'npm publish'
+  if (version.includes('-beta.')) {
+    cmd = `${cmd} --tag beta`
+  }
+  console.log(`Now running "${cmd}"`)
+  console.log(execSync(cmd, EXEC_OTPS).toString())
 }
 
 /**
