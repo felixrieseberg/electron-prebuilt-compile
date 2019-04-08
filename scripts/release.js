@@ -2,8 +2,9 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
-const PACKAGE_ROOT = path.join(__dirname, '..')
+const PACKAGE_ROOT = path.resolve(__dirname, '..')
 const EXEC_OTPS = { cwd: PACKAGE_ROOT }
+const PACKAGE_JSON_FILENAME = path.join(PACKAGE_ROOT, 'package.json')
 
 /**
  * Update the package.json to a given version number
@@ -11,7 +12,7 @@ const EXEC_OTPS = { cwd: PACKAGE_ROOT }
  * @param {string} [version='']
  */
 function updatePackageJson(version = '') {
-  const packageJsonFile = fs.readFileSync(path.join(__dirname, '../package.json'))
+  const packageJsonFile = fs.readFileSync(PACKAGE_JSON_FILENAME)
   const packageJson = JSON.parse(packageJsonFile)
 
   packageJson.version = version
@@ -19,7 +20,7 @@ function updatePackageJson(version = '') {
 
   const packageJsonUpdate = JSON.stringify(packageJson, undefined, 2)
 
-  fs.writeFileSync(path.join(__dirname, '../package.json'), packageJsonUpdate)
+  fs.writeFileSync(PACKAGE_JSON_FILENAME, packageJsonUpdate)
 }
 
 /**
@@ -34,8 +35,12 @@ function runNpmInstall(version = '') {
  * Run "npm publish" in the package root
  */
 function runNpmPublish(version = '') {
-  console.log(`Now running "npm publish"`)
-  console.log(execSync('npm publish', EXEC_OTPS).toString())
+  let cmd = 'npm publish'
+  if (version.includes('-beta.')) {
+    cmd = `${cmd} --tag beta`
+  }
+  console.log(`Now running "${cmd}"`)
+  console.log(execSync(cmd, EXEC_OTPS).toString())
 }
 
 /**
