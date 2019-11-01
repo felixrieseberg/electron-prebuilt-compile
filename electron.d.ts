@@ -1,4 +1,4 @@
-// Type definitions for Electron 8.0.0-beta.1
+// Type definitions for Electron 8.0.0-beta.2
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -4659,7 +4659,7 @@ Retrieves the product descriptions.
      * Removes the specified `listener` from the listener array for the specified
      * `channel`.
      */
-    removeListener(channel: string, listener: () => void): this;
+    removeListener(channel: string, listener: (...args: any[]) => void): this;
   }
 
   interface IpcMainEvent extends Event {
@@ -6377,6 +6377,13 @@ Clears the host resolver cache.
      */
     getPreloads(): string[];
     /**
+     * An array of language codes the spellchecker is enabled for.  If this list is
+     * empty the spellchecker will fallback to using `en-US`.  By default on launch if
+     * this setting is an empty list Electron will try to populate this setting with
+     * the current OS locale.  This setting is persisted across restarts.
+     */
+    getSpellCheckerLanguages(): string[];
+    /**
      * The user agent for this session.
      */
     getUserAgent(): string;
@@ -6477,6 +6484,21 @@ Clears the host resolver cache.
      */
     setProxy(config: Config): Promise<void>;
     /**
+     * By default Electron will download hunspell dictionaries from the Chromium CDN.
+     * If you want to override this behavior you can use this API to point the
+     * dictionary downloader at your own hosted version of the hunspell dictionaries.
+     * We publish a `hunspell_dictionaries.zip` file with each release which contains
+     * the files you need to host here.
+     */
+    setSpellCheckerDictionaryDownloadURL(url: string): void;
+    /**
+     * The built in spellchecker does not automatically detect what language a user is
+     * typing in.  In order for the spell checker to correctly check their words you
+     * must call this API with an array of language codes.  You can get the list of
+     * supported language codes with the `ses.availableSpellCheckerLanguages` property.
+     */
+    setSpellCheckerLanguages(languages: string[]): void;
+    /**
      * Overrides the `userAgent` and `acceptLanguages` for this session.
      *
      * The `acceptLanguages` must a comma separated ordered list of language codes, for
@@ -6486,6 +6508,7 @@ Clears the host resolver cache.
      * `webContents.setUserAgent` to override the session-wide user agent.
      */
     setUserAgent(userAgent: string, acceptLanguages?: string): void;
+    readonly availableSpellCheckerLanguages: string[];
     readonly cookies: Cookies;
     readonly netLog: NetLog;
     readonly protocol: Protocol;
@@ -9658,6 +9681,9 @@ This will generate:
     /**
      * Sets a provider for spell checking in input fields and text areas.
      *
+     * If you want to use this method you must disable the builtin spellchecker when
+     * you construct the window.
+     *
      * The `provider` must be an object that has a `spellCheck` method that accepts an
      * array of individual words for spellchecking. The `spellCheck` function runs
      * asynchronously and calls the `callback` function with an array of misspelt words
@@ -11022,6 +11048,11 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * The misspelled word under the cursor, if any.
      */
     misspelledWord: string;
+    /**
+     * An array of suggested words to show the user to replace the `misspelledWord`.
+     * Only available if there is a misspelled word and spellchecker is enabled.
+     */
+    dictionarySuggestions: string[];
     /**
      * The character encoding of the frame on which the menu was invoked.
      */
@@ -13294,6 +13325,10 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * readers. This string is not directly visible to users.
      */
     accessibleTitle?: string;
+    /**
+     * Whether to enable the builtin spellchecker. Default is `false`.
+     */
+    spellcheck?: boolean;
   }
 
   interface DefaultFontFamily {
@@ -13436,16 +13471,12 @@ declare namespace NodeJS {
     /**
      * The version of the host operating system.
      * 
-     * Examples:
-     * 
-     * * `macOS` -> `10.13.6`
-     * * `Windows` -> `10.0.17763`
-     * * `Linux` -> `4.15.0-45-generic`
+     * Example:
      * 
      * **Note:** It returns the actual operating system version instead of kernel
      * version on macOS unlike `os.release()`.
      */
-    getSystemVersion(): ('macOS' | 'Windows' | 'Linux');
+    getSystemVersion(): string;
     /**
      * Causes the main thread of the current process hang.
      */
