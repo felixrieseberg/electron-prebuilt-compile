@@ -1,4 +1,4 @@
-// Type definitions for Electron 7.1.8
+// Type definitions for Electron 7.1.9
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -11790,7 +11790,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     ip?: string;
     fromCache: boolean;
-    responseHeaders?: Record<string, string>;
+    responseHeaders?: Record<string, string[]>;
   }
 
   interface OnBeforeRequestListenerDetails {
@@ -11823,7 +11823,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
     resourceType: string;
     referrer: string;
     timestamp: number;
-    responseHeaders?: Record<string, string>;
+    responseHeaders?: Record<string, string[]>;
     fromCache: boolean;
     statusCode: number;
     statusLine: string;
@@ -11854,7 +11854,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
     timestamp: number;
     statusLine: string;
     statusCode: number;
-    responseHeaders?: Record<string, string>;
+    responseHeaders?: Record<string, string[]>;
   }
 
   interface OnResponseStartedListenerDetails {
@@ -11865,7 +11865,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
     resourceType: string;
     referrer: string;
     timestamp: number;
-    responseHeaders?: Record<string, string>;
+    responseHeaders?: Record<string, string[]>;
     /**
      * Indicates whether the response was fetched from disk cache.
      */
