@@ -1,4 +1,4 @@
-// Type definitions for Electron 8.0.0-beta.6
+// Type definitions for Electron 8.0.0-beta.7
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -6324,6 +6324,13 @@ e.g.
                                           item: DownloadItem,
                                           webContents: WebContents) => void): this;
     /**
+     * Whether the word was successfully written to the custom dictionary.
+     *
+     * **Note:** On macOS and Windows 10 this word will be written to the OS custom
+     * dictionary as well
+     */
+    addWordToSpellCheckerDictionary(word: string): boolean;
+    /**
      * Dynamically sets whether to always send credentials for HTTP NTLM or Negotiate
      * authentication.
      */
@@ -6394,6 +6401,9 @@ Clears the host resolver cache.
      * empty the spellchecker will fallback to using `en-US`.  By default on launch if
      * this setting is an empty list Electron will try to populate this setting with
      * the current OS locale.  This setting is persisted across restarts.
+     *
+     * **Note:** On macOS the OS spellchecker is used and has it's own list of
+     * languages.  This API is a no-op on macOS.
      */
     getSpellCheckerLanguages(): string[];
     /**
@@ -6502,6 +6512,9 @@ Clears the host resolver cache.
      * dictionary downloader at your own hosted version of the hunspell dictionaries.
      * We publish a `hunspell_dictionaries.zip` file with each release which contains
      * the files you need to host here.
+     *
+     * **Note:** On macOS the OS spellchecker is used and therefore we do not download
+     * any dictionary files.  This API is a no-op on macOS.
      */
     setSpellCheckerDictionaryDownloadURL(url: string): void;
     /**
@@ -6509,6 +6522,9 @@ Clears the host resolver cache.
      * typing in.  In order for the spell checker to correctly check their words you
      * must call this API with an array of language codes.  You can get the list of
      * supported language codes with the `ses.availableSpellCheckerLanguages` property.
+     *
+     * **Note:** On macOS the OS spellchecker is used and will detect your language
+     * automatically.  This API is a no-op on macOS.
      */
     setSpellCheckerLanguages(languages: string[]): void;
     /**
