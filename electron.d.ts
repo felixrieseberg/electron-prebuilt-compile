@@ -1,4 +1,4 @@
-// Type definitions for Electron 9.0.4
+// Type definitions for Electron 8.3.2
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -47,7 +47,6 @@ declare namespace Electron {
     protocol: Protocol;
     remote: Remote;
     screen: Screen;
-    ServiceWorkers: typeof ServiceWorkers;
     session: typeof Session;
     shell: Shell;
     systemPreferences: SystemPreferences;
@@ -504,11 +503,10 @@ You should call `event.preventDefault()` if you want to handle this event.
     removeListener(event: 'quit', listener: (event: Event,
                                  exitCode: number) => void): this;
     /**
-     * Emitted once, when Electron has finished initializing. On macOS, `launchInfo`
-     * holds the `userInfo` of the `NSUserNotification` that was used to open the
-     * application, if it was launched from Notification Center. You can also call
-     * `app.isReady()` to check if this event has already fired and `app.whenReady()`
-     * to get a Promise that is fulfilled when Electron is initialized.
+     * Emitted when Electron has finished initializing. On macOS, `launchInfo` holds
+     * the `userInfo` of the `NSUserNotification` that was used to open the
+     * application, if it was launched from Notification Center. You can call
+     * `app.isReady()` to check if this event has already fired.
      */
     on(event: 'ready', listener: (launchInfo: unknown) => void): this;
     once(event: 'ready', listener: (launchInfo: unknown) => void): this;
@@ -574,6 +572,23 @@ You should call `event.preventDefault()` if you want to handle this event.
     removeListener(event: 'remote-get-global', listener: (event: Event,
                                               webContents: WebContents,
                                               globalName: string) => void): this;
+    /**
+     * Emitted when `<webview>.getWebContents()` is called in the renderer process of
+     * `webContents`. Calling `event.preventDefault()` will prevent the object from
+     * being returned. Custom value can be returned by setting `event.returnValue`.
+     */
+    on(event: 'remote-get-guest-web-contents', listener: (event: Event,
+                                                          webContents: WebContents,
+                                                          guestWebContents: WebContents) => void): this;
+    once(event: 'remote-get-guest-web-contents', listener: (event: Event,
+                                                          webContents: WebContents,
+                                                          guestWebContents: WebContents) => void): this;
+    addListener(event: 'remote-get-guest-web-contents', listener: (event: Event,
+                                                          webContents: WebContents,
+                                                          guestWebContents: WebContents) => void): this;
+    removeListener(event: 'remote-get-guest-web-contents', listener: (event: Event,
+                                                          webContents: WebContents,
+                                                          guestWebContents: WebContents) => void): this;
     /**
      * Emitted when `remote.require()` is called in the renderer process of
      * `webContents`. Calling `event.preventDefault()` will prevent the module from
@@ -695,7 +710,7 @@ You should call `event.preventDefault()` if you want to handle this event.
      * Emitted when Handoff is about to be resumed on another device. If you need to
      * update the state to be transferred, you should call `event.preventDefault()`
      * immediately, construct a new `userInfo` dictionary and call
-     * `app.updateCurrentActivity()` in a timely manner. Otherwise, the operation will
+     * `app.updateCurrentActiviy()` in a timely manner. Otherwise, the operation will
      * fail and `continue-activity-error` will be called.
      *
      * @platform darwin
@@ -789,8 +804,8 @@ In most cases, you should do everything in the `ready` event handler.
     removeListener(event: 'will-finish-launching', listener: Function): this;
     /**
      * Emitted when all windows have been closed and the application will quit. Calling
-     * `event.preventDefault()` will prevent the default behavior, which is terminating
-     * the application.
+     * `event.preventDefault()` will prevent the default behaviour, which is
+     * terminating the application.
      *
      * See the description of the `window-all-closed` event for the differences between
      * the `will-quit` and `window-all-closed` events.
@@ -834,7 +849,7 @@ In most cases, you should do everything in the `ready` event handler.
     /**
      * By default, Chromium disables 3D APIs (e.g. WebGL) until restart on a per domain
      * basis if the GPU processes crashes too frequently. This function disables that
-     * behavior.
+     * behaviour.
 
 This method can only be called before app is ready.
      */
@@ -1003,7 +1018,7 @@ You should seek to use the `steal` option as sparingly as possible.
      * called first, a default log directory will be created equivalent to calling
      * `app.setAppLogsPath()` without a `path` parameter.
      */
-    getPath(name: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'logs' | 'pepperFlashSystemPlugin' | 'crashDumps'): string;
+    getPath(name: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'logs' | 'pepperFlashSystemPlugin'): string;
     /**
      * The version of the loaded application. If no version is found in the
      * application's `package.json` file, the version of the current bundle or
@@ -1073,8 +1088,7 @@ You should seek to use the `steal` option as sparingly as possible.
      */
     isInApplicationsFolder(): boolean;
     /**
-     * `true` if Electron has finished initializing, `false` otherwise. See also
-     * `app.whenReady()`.
+     * `true` if Electron has finished initializing, `false` otherwise.
      */
     isReady(): boolean;
     /**
@@ -1187,7 +1201,7 @@ You should seek to use the `steal` option as sparingly as possible.
     resignCurrentActivity(): void;
     /**
      * Set the about panel options. This will override the values defined in the app's
-     * `.plist` file on macOS. See the Apple docs for more details. On Linux, values
+     * `.plist` file on MacOS. See the Apple docs for more details. On Linux, values
      * must be set in order to be shown; there are no defaults.
      *
      * If you do not set `credits` but still wish to surface them in your app, AppKit
@@ -1210,22 +1224,6 @@ You should seek to use the `steal` option as sparingly as possible.
      * @platform darwin,win32
      */
     setAccessibilitySupportEnabled(enabled: boolean): void;
-    /**
-     * Sets the activation policy for a given app.
-     *
-     * Activation policy types:
-     *
-     * * 'regular' - The application is an ordinary app that appears in the Dock and
-     * may have a user interface.
-     * * 'accessory' - The application doesn’t appear in the Dock and doesn’t have a
-     * menu bar, but it may be activated programmatically or by clicking on one of its
-     * windows.
-     * * 'prohibited' - The application doesn’t appear in the Dock and may not create
-     * windows or be activated.
-     *
-     * @platform darwin
-     */
-    setActivationPolicy(policy: 'regular' | 'accessory' | 'prohibited'): void;
     /**
      * Sets or creates a directory your app's logs which can then be manipulated with
      * `app.getPath()` or `app.setPath(pathName, newPath)`.
@@ -1429,7 +1427,7 @@ Here's a very simple example of creating a custom Jump List:
     /**
      * A `Boolean` which when `true` disables the overrides that Electron has in place
      * to ensure renderer processes are restarted on every navigation.  The current
-     * default value for this property is `true`.
+     * default value for this property is `false`.
      *
      * The intention is for these overrides to become disabled by default and then at
      * some point in the future this property will be removed.  This property impacts
@@ -1463,8 +1461,8 @@ Here's a very simple example of creating a custom Jump List:
      */
     readonly commandLine: CommandLine;
     /**
-     * A `Dock` `| undefined` object that allows you to perform actions on your app
-     * icon in the user's dock on macOS.
+     * A `Dock` object that allows you to perform actions on your app icon in the
+     * user's dock on macOS.
      *
      * @platform darwin
      */
@@ -2052,10 +2050,6 @@ __Note__: On macOS this event is an alias of `moved`.
      *
      * **Note:** This API cannot be called before the `ready` event of the `app` module
      * is emitted.
-     * 
-**Note:** This method is deprecated. Instead, use `ses.loadExtension(path)`.
-     *
-     * @deprecated
      */
     static addDevToolsExtension(path: string): void;
     /**
@@ -2066,10 +2060,6 @@ __Note__: On macOS this event is an alias of `moved`.
      *
      * **Note:** This API cannot be called before the `ready` event of the `app` module
      * is emitted.
-     * 
-**Note:** This method is deprecated. Instead, use `ses.loadExtension(path)`.
-     *
-     * @deprecated
      */
     static addExtension(path: string): void;
     /**
@@ -2098,10 +2088,6 @@ __Note__: On macOS this event is an alias of `moved`.
      *
      * **Note:** This API cannot be called before the `ready` event of the `app` module
      * is emitted.
-     * 
-**Note:** This method is deprecated. Instead, use `ses.getAllExtensions()`.
-     *
-     * @deprecated
      */
     static getDevToolsExtensions(): Record<string, ExtensionInfo>;
     /**
@@ -2110,10 +2096,6 @@ __Note__: On macOS this event is an alias of `moved`.
      *
      * **Note:** This API cannot be called before the `ready` event of the `app` module
      * is emitted.
-     * 
-**Note:** This method is deprecated. Instead, use `ses.getAllExtensions()`.
-     *
-     * @deprecated
      */
     static getExtensions(): Record<string, ExtensionInfo>;
     /**
@@ -2125,11 +2107,6 @@ __Note__: On macOS this event is an alias of `moved`.
      *
      * **Note:** This API cannot be called before the `ready` event of the `app` module
      * is emitted.
-     *
-     * **Note:** This method is deprecated. Instead, use
-     * `ses.removeExtension(extension_id)`.
-     *
-     * @deprecated
      */
     static removeDevToolsExtension(name: string): void;
     /**
@@ -2137,11 +2114,6 @@ __Note__: On macOS this event is an alias of `moved`.
      *
      * **Note:** This API cannot be called before the `ready` event of the `app` module
      * is emitted.
-     *
-     * **Note:** This method is deprecated. Instead, use
-     * `ses.removeExtension(extension_id)`.
-     *
-     * @deprecated
      */
     static removeExtension(name: string): void;
     /**
@@ -2199,10 +2171,6 @@ __Note__: On macOS this event is an alias of `moved`.
      */
     focus(): void;
     focusOnWebView(): void;
-    /**
-     * Gets the background color of the window. See Setting `backgroundColor`.
-     */
-    getBackgroundColor(): string;
     /**
      * The `bounds` of the window as `Object`.
      */
@@ -2559,12 +2527,15 @@ On Linux always returns `true`.
      * Perhaps there are 15 pixels of controls on the left edge, 25 pixels of controls
      * on the right edge and 50 pixels of controls below the player. In order to
      * maintain a 16:9 aspect ratio (standard aspect ratio for HD @1920x1080) within
-     * the player itself we would call this function with arguments of 16/9 and {
-     * width: 40, height: 50 }. The second argument doesn't care where the extra width
-     * and height are within the content view--only that they exist. Sum any extra
-     * width and height areas you have within the overall content view.
+     * the player itself we would call this function with arguments of 16/9 and [ 40,
+     * 50 ]. The second argument doesn't care where the extra width and height are
+     * within the content view--only that they exist. Sum any extra width and height
+     * areas you have within the overall content view.
      *
-     * @platform darwin,linux
+     * Calling this function with a value of `0` will remove any previously set aspect
+     * ratios.
+     *
+     * @platform darwin
      */
     setAspectRatio(aspectRatio: number, extraSize?: Size): void;
     /**
@@ -2661,7 +2632,7 @@ On macOS it does not remove the focus from the window.
      */
     setIgnoreMouseEvents(ignore: boolean, options?: IgnoreMouseEventsOptions): void;
     /**
-     * Enters or leaves kiosk mode.
+     * Enters or leaves the kiosk mode.
      */
     setKiosk(flag: boolean): void;
     /**
@@ -2777,7 +2748,7 @@ On macOS it does not remove the focus from the window.
      * Enters or leaves simple fullscreen mode.
      *
      * Simple fullscreen mode emulates the native fullscreen behavior found in versions
-     * of macOS prior to Lion (10.7).
+     * of Mac OS X prior to Lion (10.7).
      *
      * @platform darwin
      */
@@ -2882,7 +2853,7 @@ On macOS it does not remove the focus from the window.
      * 
 **Note:** This API does nothing on Windows.
      */
-    setVisibleOnAllWorkspaces(visible: boolean): void;
+    setVisibleOnAllWorkspaces(visible: boolean, options?: VisibleOnAllWorkspacesOptions): void;
     /**
      * Sets whether the window traffic light buttons should be visible.
      * 
@@ -2931,22 +2902,13 @@ This cannot be called when `titleBarStyle` is set to `customButtonsOnHover`.
     accessibleTitle: string;
     autoHideMenuBar: boolean;
     closable: boolean;
-    documentEdited: boolean;
     excludedFromShownWindowsMenu: boolean;
-    fullScreen: boolean;
     fullScreenable: boolean;
     readonly id: number;
-    kiosk: boolean;
     maximizable: boolean;
-    menuBarVisible: boolean;
     minimizable: boolean;
     movable: boolean;
-    representedFilename: string;
     resizable: boolean;
-    shadow: boolean;
-    simpleFullScreen: boolean;
-    title: string;
-    visibleOnAllWorkspaces: boolean;
     readonly webContents: WebContents;
   }
 
@@ -3400,9 +3362,6 @@ This cannot be called when `titleBarStyle` is set to `customButtonsOnHover`.
      *
      * Get a set of category groups. The category groups can change as new code paths
      * are reached. See also the list of built-in tracing categories.
-     *
-     * > **NOTE:** Electron adds a non-default tracing category called `"electron"`.
-     * This category can be used to capture Electron-specific tracing events.
      */
     getCategories(): Promise<string[]>;
     /**
@@ -3570,92 +3529,79 @@ Sets a cookie with `details`.
     /**
      * Set an extra parameter to be sent with the crash report. The values specified
      * here will be sent in addition to any values set via the `extra` option when
-     * `start` was called.
+     * `start` was called. This API is only available on macOS and windows, if you need
+     * to add/update extra parameters on Linux after your first call to `start` you can
+     * call `start` again with the updated `extra` options.
      *
-     * Parameters added in this fashion (or via the `extra` parameter to
-     * `crashReporter.start`) are specific to the calling process. Adding extra
-     * parameters in the main process will not cause those parameters to be sent along
-     * with crashes from renderer or other child processes. Similarly, adding extra
-     * parameters in a renderer process will not result in those parameters being sent
-     * with crashes that occur in other renderer processes or in the main process.
-     *
-     * **Note:** Parameters have limits on the length of the keys and values. Key names
-     * must be no longer than 39 bytes, and values must be no longer than 127 bytes.
-     * Keys with names longer than the maximum will be silently ignored. Key values
-     * longer than the maximum length will be truncated.
+     * @platform darwin,win32
      */
     addExtraParameter(key: string, value: string): void;
     /**
      * The directory where crashes are temporarily stored before being uploaded.
-     * 
-**Note:** This method is deprecated, use `app.getPath('crashDumps')` instead.
-     *
-     * @deprecated
      */
     getCrashesDirectory(): string;
     /**
-     * The date and ID of the last crash report. Only crash reports that have been
-     * uploaded will be returned; even if a crash report is present on disk it will not
-     * be returned until it is uploaded. In the case that there are no uploaded
-     * reports, `null` is returned.
-     * 
-**Note:** Calling this method from the renderer process is deprecated.
+     * Returns the date and ID of the last crash report. Only crash reports that have
+     * been uploaded will be returned; even if a crash report is present on disk it
+     * will not be returned until it is uploaded. In the case that there are no
+     * uploaded reports, `null` is returned.
      */
     getLastCrashReport(): CrashReport;
     /**
-     * The current 'extra' parameters of the crash reporter.
+     * See all of the current parameters being passed to the crash reporter.
      */
-    getParameters(): Record<string, string>;
+    getParameters(): void;
     /**
      * Returns all uploaded crash reports. Each report contains the date and uploaded
      * ID.
-
-**Note:** Calling this method from the renderer process is deprecated.
      */
     getUploadedReports(): CrashReport[];
     /**
      * Whether reports should be submitted to the server. Set through the `start`
      * method or `setUploadToServer`.
      * 
-**Note:** Calling this method from the renderer process is deprecated.
+**Note:** This API can only be called from the main process.
      */
     getUploadToServer(): boolean;
     /**
-     * Remove a extra parameter from the current set of parameters. Future crashes will
-     * not include this parameter.
+     * Remove a extra parameter from the current set of parameters so that it will not
+     * be sent with the crash report.
+     *
+     * @platform darwin,win32
      */
     removeExtraParameter(key: string): void;
     /**
      * This would normally be controlled by user preferences. This has no effect if
      * called before `start` is called.
      * 
-**Note:** Calling this method from the renderer process is deprecated.
+**Note:** This API can only be called from the main process.
      */
     setUploadToServer(uploadToServer: boolean): void;
     /**
-     * This method must be called before using any other `crashReporter` APIs. Once
-     * initialized this way, the crashpad handler collects crashes from all
-     * subsequently created processes. The crash reporter cannot be disabled once
-     * started.
+     * You are required to call this method before using any other `crashReporter` APIs
+     * and in each process (main/renderer) from which you want to collect crash
+     * reports. You can pass different options to `crashReporter.start` when calling
+     * from different processes.
      *
-     * This method should be called as early as possible in app startup, preferably
-     * before `app.on('ready')`. If the crash reporter is not initialized at the time a
-     * renderer process is created, then that renderer process will not be monitored by
-     * the crash reporter.
+     * **Note** Child processes created via the `child_process` module will not have
+     * access to the Electron modules. Therefore, to collect crash reports from them,
+     * use `process.crashReporter.start` instead. Pass the same options as above along
+     * with an additional one called `crashesDirectory` that should point to a
+     * directory to store the crash reports temporarily. You can test this out by
+     * calling `process.crash()` to crash the child process.
      *
-     * **Note:** You can test out the crash reporter by generating a crash using
-     * `process.crash()`.
+     * **Note:** If you need send additional/updated `extra` parameters after your
+     * first call `start` you can call `addExtraParameter` on macOS or call `start`
+     * again with the new/updated `extra` parameters on Linux and Windows.
      *
-     * **Note:** If you need to send additional/updated `extra` parameters after your
-     * first call `start` you can call `addExtraParameter`.
-     *
-     * **Note:** Parameters passed in `extra`, `globalExtra` or set with
-     * `addExtraParameter` have limits on the length of the keys and values. Key names
-     * must be at most 39 bytes long, and values must be no longer than 127 bytes. Keys
-     * with names longer than the maximum will be silently ignored. Key values longer
-     * than the maximum length will be truncated.
-     * 
-**Note:** Calling this method from the renderer process is deprecated.
+     * **Note:** On macOS and windows, Electron uses a new `crashpad` client for crash
+     * collection and reporting. If you want to enable crash reporting, initializing
+     * `crashpad` from the main process using `crashReporter.start` is required
+     * regardless of which process you want to collect crashes from. Once initialized
+     * this way, the crashpad handler collects crashes from all processes. You still
+     * have to call `crashReporter.start` from the renderer or child process, otherwise
+     * crashes from them will get reported without `companyName`, `productName` or any
+     * of the `extra` information.
      */
     start(options: CrashReporterStartOptions): void;
   }
@@ -4383,27 +4329,6 @@ If the size is unknown, it returns 0.
     preventDefault: (() => void);
   }
 
-  interface Extension {
-
-    // Docs: http://electronjs.org/docs/api/structures/extension
-
-    id: string;
-    /**
-     * Copy of the extension's manifest data.
-     */
-    manifest: any;
-    name: string;
-    /**
-     * The extension's file path.
-     */
-    path: string;
-    /**
-     * The extension's `chrome-extension://` URL.
-     */
-    url: string;
-    version: string;
-  }
-
   interface ExtensionInfo {
 
     // Docs: http://electronjs.org/docs/api/structures/extension-info
@@ -4588,16 +4513,6 @@ Retrieves the product descriptions.
      * certainly before you call `purchaseProduct`.
      */
     purchaseProduct(productID: string, quantity?: number): Promise<boolean>;
-    /**
-     * Restores finished transactions. This method can be called either to install
-     * purchases on additional devices, or to restore purchases for an application that
-     * the user deleted and reinstalled.
-     *
-     * The payment queue delivers a new transaction for each previously completed
-     * transaction that can be restored. Each transaction includes a copy of the
-     * original transaction.
-     */
-    restoreCompletedTransactions(): void;
   }
 
   class IncomingMessage extends NodeJS.EventEmitter {
@@ -5145,7 +5060,7 @@ For example:
     label: string;
     menu: Menu;
     registerAccelerator: boolean;
-    role?: ('undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'pasteAndMatchStyle' | 'delete' | 'selectAll' | 'reload' | 'forceReload' | 'toggleDevTools' | 'resetZoom' | 'zoomIn' | 'zoomOut' | 'togglefullscreen' | 'window' | 'minimize' | 'close' | 'help' | 'about' | 'services' | 'hide' | 'hideOthers' | 'unhide' | 'quit' | 'startSpeaking' | 'stopSpeaking' | 'zoom' | 'front' | 'appMenu' | 'fileMenu' | 'editMenu' | 'viewMenu' | 'recentDocuments' | 'toggleTabBar' | 'selectNextTab' | 'selectPreviousTab' | 'mergeAllWindows' | 'clearRecentDocuments' | 'moveTabToNewWindow' | 'windowMenu');
+    role?: ('undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'pasteAndMatchStyle' | 'delete' | 'selectAll' | 'reload' | 'forceReload' | 'toggleDevTools' | 'resetZoom' | 'zoomIn' | 'zoomOut' | 'togglefullscreen' | 'window' | 'minimize' | 'close' | 'help' | 'about' | 'services' | 'hide' | 'hideOthers' | 'unhide' | 'quit' | 'startSpeaking' | 'stopSpeaking' | 'close' | 'minimize' | 'zoom' | 'front' | 'appMenu' | 'fileMenu' | 'editMenu' | 'viewMenu' | 'recentDocuments' | 'toggleTabBar' | 'selectNextTab' | 'selectPreviousTab' | 'mergeAllWindows' | 'clearRecentDocuments' | 'moveTabToNewWindow' | 'windowMenu');
     sublabel: string;
     submenu?: Menu;
     toolTip: string;
@@ -5376,7 +5291,7 @@ where `SYSTEM_IMAGE_NAME` should be replaced with any value from this list.
     readonly shouldUseInvertedColorScheme: boolean;
     /**
      * A `String` property that can be `system`, `light` or `dark`.  It is used to
-     * override and supersede the value that Chromium has chosen to use internally.
+     * override and supercede the value that Chromium has chosen to use internally.
      *
      * Setting this property to `system` will remove the override and everything will
      * be reset to the OS default.  By default `themeSource` is `system`.
@@ -5713,29 +5628,9 @@ Calculate system idle time in seconds.
 
     // Docs: http://electronjs.org/docs/api/structures/printer-info
 
-    /**
-     * a longer description of the printer's type.
-     */
     description: string;
-    /**
-     * the name of the printer as shown in Print Preview.
-     */
-    displayName: string;
-    /**
-     * whether or not a given printer is set as the default printer on the OS.
-     */
     isDefault: boolean;
-    /**
-     * the name of the printer as understood by the OS.
-     */
     name: string;
-    /**
-     * an object containing a variable number of platform-specific printer information.
-     */
-    options: Options;
-    /**
-     * the current status of the printer.
-     */
     status: number;
   }
 
@@ -6331,67 +6226,6 @@ e.g.
     label?: string;
   }
 
-  interface ServiceWorkerInfo {
-
-    // Docs: http://electronjs.org/docs/api/structures/service-worker-info
-
-    /**
-     * The virtual ID of the process that this service worker is running in.  This is
-     * not an OS level PID.  This aligns with the ID set used for
-     * `webContents.getProcessId()`.
-     */
-    renderProcessId: number;
-    /**
-     * The base URL that this service worker is active for.
-     */
-    scope: string;
-    /**
-     * The full URL to the script that this service worker runs
-     */
-    scriptUrl: string;
-  }
-
-  class ServiceWorkers extends NodeJS.EventEmitter {
-
-    // Docs: http://electronjs.org/docs/api/service-workers
-
-    /**
-     * Emitted when a service worker logs something to the console.
-     */
-    on(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * Information about the console message
-                                             */
-                                            messageDetails: MessageDetails) => void): this;
-    once(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * Information about the console message
-                                             */
-                                            messageDetails: MessageDetails) => void): this;
-    addListener(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * Information about the console message
-                                             */
-                                            messageDetails: MessageDetails) => void): this;
-    removeListener(event: 'console-message', listener: (event: Event,
-                                            /**
-                                             * Information about the console message
-                                             */
-                                            messageDetails: MessageDetails) => void): this;
-    /**
-     * A ServiceWorkerInfo object where the keys are the service worker version ID and
-     * the values are the information about that service worker.
-     */
-    getAllRunning(): Record<number, ServiceWorkerInfo>;
-    /**
-     * Information about this service worker
-     *
-     * If the service worker does not exist or is not running this method will throw an
-     * exception.
-     */
-    getFromVersionID(versionId: number): ServiceWorkerInfo;
-  }
-
   class Session extends NodeJS.EventEmitter {
 
     // Docs: http://electronjs.org/docs/api/session
@@ -6572,8 +6406,7 @@ e.g.
                                           item: DownloadItem,
                                           webContents: WebContents) => void): this;
     /**
-     * Whether the word was successfully written to the custom dictionary. This API
-     * will not work on non-persistent (in-memory) sessions.
+     * Whether the word was successfully written to the custom dictionary.
      *
      * **Note:** On macOS and Windows 10 this word will be written to the OS custom
      * dictionary as well
@@ -6634,13 +6467,6 @@ Clears the host resolver cache.
      */
     flushStorageData(): void;
     /**
-     * A list of all loaded extensions.
-     *
-     * **Note:** This API cannot be called before the `ready` event of the `app` module
-     * is emitted.
-     */
-    getAllExtensions(): Extension[];
-    /**
      * resolves with blob data.
      */
     getBlobData(identifier: string): Promise<Buffer>;
@@ -6648,13 +6474,6 @@ Clears the host resolver cache.
      * the session's current cache size, in bytes.
      */
     getCacheSize(): Promise<number>;
-    /**
-     * | `null` - The loaded extension with the given ID.
-     *
-     * **Note:** This API cannot be called before the `ready` event of the `app` module
-     * is emitted.
-     */
-    getExtension(extensionId: string): Extension;
     /**
      * an array of paths to preload scripts that have been registered.
      */
@@ -6674,49 +6493,9 @@ Clears the host resolver cache.
      */
     getUserAgent(): string;
     /**
-     * An array of all words in app's custom dictionary. Resolves when the full
-     * dictionary is loaded from disk.
-     */
-    listWordsInSpellCheckerDictionary(): Promise<string[]>;
-    /**
-     * resolves when the extension is loaded.
-     *
-     * This method will raise an exception if the extension could not be loaded. If
-     * there are warnings when installing the extension (e.g. if the extension requests
-     * an API that Electron does not support) then they will be logged to the console.
-     *
-     * Note that Electron does not support the full range of Chrome extensions APIs.
-     *
-     * Note that in previous versions of Electron, extensions that were loaded would be
-     * remembered for future runs of the application. This is no longer the case:
-     * `loadExtension` must be called on every boot of your app if you want the
-     * extension to be loaded.
-     *
-     * This API does not support loading packed (.crx) extensions.
-     *
-     * **Note:** This API cannot be called before the `ready` event of the `app` module
-     * is emitted.
-     */
-    loadExtension(path: string): Promise<Electron.Extension>;
-    /**
      * Preconnects the given number of sockets to an origin.
      */
     preconnect(options: PreconnectOptions): void;
-    /**
-     * Unloads an extension.
-     *
-     * **Note:** This API cannot be called before the `ready` event of the `app` module
-     * is emitted.
-     */
-    removeExtension(extensionId: string): void;
-    /**
-     * Whether the word was successfully removed from the custom dictionary. This API
-     * will not work on non-persistent (in-memory) sessions.
-     *
-     * **Note:** On macOS and Windows 10 this word will be removed from the OS custom
-     * dictionary as well
-     */
-    removeWordFromSpellCheckerDictionary(word: string): boolean;
     /**
      * Resolves with the proxy information for `url`.
      */
@@ -6853,7 +6632,6 @@ Clears the host resolver cache.
     readonly cookies: Cookies;
     readonly netLog: NetLog;
     readonly protocol: Protocol;
-    readonly serviceWorkers: ServiceWorkers;
     readonly webRequest: WebRequest;
   }
 
@@ -6891,12 +6669,11 @@ Move the given file to trash and returns a boolean status for the operation.
      */
     openExternal(url: string, options?: OpenExternalOptions): Promise<void>;
     /**
-     * Resolves with an string containing the error message corresponding to the
-     * failure if a failure occurred, otherwise "".
+     * Whether the item was successfully opened.
      * 
 Open the given file in the desktop's default manner.
      */
-    openPath(path: string): Promise<string>;
+    openItem(fullPath: string): boolean;
     /**
      * Resolves the shortcut link at `shortcutPath`.
      * 
@@ -7155,7 +6932,7 @@ Returns an object with system animation settings.
     getAppLevelAppearance(): ('dark' | 'light' | 'unknown');
     /**
      * The system color setting in RGB hexadecimal form (`#ABCDEF`). See the Windows
-     * docs and the macOS docs for more details.
+     * docs and the MacOS docs for more details.
      *
      * The following colors are only available on macOS 10.14: `find-highlight`,
      * `selected-content-background`, `separator`,
@@ -7514,7 +7291,6 @@ This property is only available on macOS 10.14 Mojave or newer.
     constructor(options: TouchBarButtonConstructorOptions);
     accessibilityLabel: string;
     backgroundColor: string;
-    enabled: boolean;
     icon: NativeImage;
     label: string;
   }
@@ -7913,31 +7689,6 @@ This property is only available on macOS 10.14 Mojave or newer.
                                        */
                                       text: string) => void): this;
     /**
-     * Emitted when the mouse clicks the tray icon.
-     *
-     * @platform darwin
-     */
-    on(event: 'mouse-down', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
-    once(event: 'mouse-down', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
-    addListener(event: 'mouse-down', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
-    removeListener(event: 'mouse-down', listener: (event: KeyboardEvent,
-                                       /**
-                                        * The position of the event.
-                                        */
-                                       position: Point) => void): this;
-    /**
      * Emitted when the mouse enters the tray icon.
      *
      * @platform darwin
@@ -8013,34 +7764,6 @@ This property is only available on macOS 10.14 Mojave or newer.
                                         */
                                        position: Point) => void): this;
     /**
-     * Emitted when the mouse is released from clicking the tray icon.
-     *
-     * Note: This will not be emitted if you have set a context menu for your Tray
-     * using `tray.setContextMenu`, as a result of macOS-level constraints.
-     *
-     * @platform darwin
-     */
-    on(event: 'mouse-up', listener: (event: KeyboardEvent,
-                                     /**
-                                      * The position of the event.
-                                      */
-                                     position: Point) => void): this;
-    once(event: 'mouse-up', listener: (event: KeyboardEvent,
-                                     /**
-                                      * The position of the event.
-                                      */
-                                     position: Point) => void): this;
-    addListener(event: 'mouse-up', listener: (event: KeyboardEvent,
-                                     /**
-                                      * The position of the event.
-                                      */
-                                     position: Point) => void): this;
-    removeListener(event: 'mouse-up', listener: (event: KeyboardEvent,
-                                     /**
-                                      * The position of the event.
-                                      */
-                                     position: Point) => void): this;
-    /**
      * Emitted when the tray icon is right clicked.
      *
      * @platform darwin,win32
@@ -8068,13 +7791,7 @@ This property is only available on macOS 10.14 Mojave or newer.
     /**
      * Tray
      */
-    constructor(image: (NativeImage) | (string), guid?: string);
-    /**
-     * Closes an open context menu, as set by `tray.setContextMenu()`.
-     *
-     * @platform darwin,win32
-     */
-    closeContextMenu(): void;
+    constructor(image: (NativeImage) | (string));
     /**
      * Destroys the tray icon immediately.
      */
@@ -9168,6 +8885,19 @@ The usage is the same with the `login` event of `app`.
     removeListener(event: 'remote-get-global', listener: (event: IpcMainEvent,
                                               globalName: string) => void): this;
     /**
+     * Emitted when `<webview>.getWebContents()` is called in the renderer process.
+     * Calling `event.preventDefault()` will prevent the object from being returned.
+     * Custom value can be returned by setting `event.returnValue`.
+     */
+    on(event: 'remote-get-guest-web-contents', listener: (event: IpcMainEvent,
+                                                          guestWebContents: WebContents) => void): this;
+    once(event: 'remote-get-guest-web-contents', listener: (event: IpcMainEvent,
+                                                          guestWebContents: WebContents) => void): this;
+    addListener(event: 'remote-get-guest-web-contents', listener: (event: IpcMainEvent,
+                                                          guestWebContents: WebContents) => void): this;
+    removeListener(event: 'remote-get-guest-web-contents', listener: (event: IpcMainEvent,
+                                                          guestWebContents: WebContents) => void): this;
+    /**
      * Emitted when `remote.require()` is called in the renderer process. Calling
      * `event.preventDefault()` will prevent the module from being returned. Custom
      * value can be returned by setting `event.returnValue`.
@@ -9865,6 +9595,14 @@ An example of showing devtools in a `BrowserWindow`:
      */
     setIgnoreMenuShortcuts(ignore: boolean): void;
     /**
+     * Sets the maximum and minimum layout-based (i.e. non-visual) zoom level.
+     * 
+**Deprecated:** This API is no longer supported by Chromium.
+     *
+     * @deprecated
+     */
+    setLayoutZoomLevelLimits(minimumLevel: number, maximumLevel: number): Promise<void>;
+    /**
      * Overrides the user agent for this web page.
      */
     setUserAgent(userAgent: string): void;
@@ -9969,7 +9707,7 @@ Takes a V8 heap snapshot and saves it to `filePath`.
     clearCache(): void;
     /**
      * A promise that resolves with the result of the executed code or is rejected if
-     * execution throws or results in a rejected promise.
+     * the result of the code is a rejected promise.
      *
      * Evaluates `code` in page.
      *
@@ -9977,7 +9715,7 @@ Takes a V8 heap snapshot and saves it to `filePath`.
      * invoked by a gesture from the user. Setting `userGesture` to `true` will remove
      * this limitation.
      */
-    executeJavaScript(code: string, userGesture?: boolean, callback?: (result: any, error: Error) => void): Promise<any>;
+    executeJavaScript(code: string, userGesture?: boolean): Promise<any>;
     /**
      * A promise that resolves with the result of the executed code or is rejected if
      * execution could not start.
@@ -9988,7 +9726,7 @@ Takes a V8 heap snapshot and saves it to `filePath`.
      * reject and the `result` would be `undefined`. This is because Chromium does not
      * dispatch errors of isolated worlds to foreign worlds.
      */
-    executeJavaScriptInIsolatedWorld(worldId: number, scripts: WebSource[], userGesture?: boolean, callback?: (result: any, error: Error) => void): Promise<any>;
+    executeJavaScriptInIsolatedWorld(worldId: number, scripts: WebSource[], userGesture?: boolean): Promise<any>;
     /**
      * A child of `webFrame` with the supplied `name`, `null` would be returned if
      * there's no such frame or if the frame is not in the current renderer process.
@@ -10049,6 +9787,14 @@ This will generate:
      * specified.
      */
     setIsolatedWorldInfo(worldId: number, info: Info): void;
+    /**
+     * Sets the maximum and minimum layout-based (i.e. non-visual) zoom level.
+     * 
+**Deprecated:** This API is no longer supported by Chromium.
+     *
+     * @deprecated
+     */
+    setLayoutZoomLevelLimits(minimumLevel: number, maximumLevel: number): void;
     /**
      * Sets a provider for spell checking in input fields and text areas.
      *
@@ -10508,6 +10254,15 @@ Calling `event.preventDefault()` does __NOT__ have any effect.
      */
     getUserAgent(): string;
     /**
+     * The web contents associated with this `webview`.
+     *
+     * It depends on the `remote` module, it is therefore not available when this
+     * module is disabled.
+     *
+     * @deprecated
+     */
+    getWebContents(): WebContents;
+    /**
      * The WebContents ID of this `webview`.
      */
     getWebContentsId(): number;
@@ -10672,6 +10427,14 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * Set guest page muted.
      */
     setAudioMuted(muted: boolean): void;
+    /**
+     * Sets the maximum and minimum layout-based (i.e. non-visual) zoom level.
+     * 
+**Deprecated:** This API is no longer supported by Chromium.
+     *
+     * @deprecated
+     */
+    setLayoutZoomLevelLimits(minimumLevel: number, maximumLevel: number): Promise<void>;
     /**
      * Overrides the user agent for the guest page.
      */
@@ -11103,7 +10866,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     skipTaskbar?: boolean;
     /**
-     * Whether the window is in kiosk mode. Default is `false`.
+     * The kiosk mode. Default is `false`.
      */
     kiosk?: boolean;
     /**
@@ -11175,7 +10938,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     opacity?: number;
     /**
-     * Forces using dark theme for the window, only works on some GTK desktop
+     * Forces using dark theme for the window, only works on some GTK+3 desktop
      * environments. Default is `false`.
      */
     darkTheme?: boolean;
@@ -11254,7 +11017,6 @@ See webContents.sendInputEvent for detailed description of `event` object.
   interface CertificateVerifyProcProcRequest {
     hostname: string;
     certificate: Certificate;
-    validatedCertificate: Certificate;
     /**
      * Verification result from chromium.
      */
@@ -11273,12 +11035,12 @@ See webContents.sendInputEvent for detailed description of `event` object.
     /**
      * The types of storages to clear, can contain: `appcache`, `cookies`,
      * `filesystem`, `indexdb`, `localstorage`, `shadercache`, `websql`,
-     * `serviceworkers`, `cachestorage`. If not specified, clear all storage types.
+     * `serviceworkers`, `cachestorage`.
      */
     storages?: string[];
     /**
      * The types of quotas to clear, can contain: `temporary`, `persistent`,
-     * `syncable`. If not specified, clear all quotas.
+     * `syncable`.
      */
     quotas?: string[];
   }
@@ -11516,6 +11278,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
   }
 
   interface CrashReporterStartOptions {
+    companyName: string;
     /**
      * URL that crash reports will be sent to as POST.
      */
@@ -11525,53 +11288,24 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     productName?: string;
     /**
-     * Deprecated alias for `{ globalExtra: { _companyName: ... } }`.
-     *
-     * @deprecated
-     */
-    companyName?: string;
-    /**
-     * Whether crash reports should be sent to the server. If false, crash reports will
-     * be collected and stored in the crashes directory, but not uploaded. Default is
-     * `true`.
+     * Whether crash reports should be sent to the server. Default is `true`.
      */
     uploadToServer?: boolean;
     /**
-     * If true, crashes generated in the main process will not be forwarded to the
-     * system crash handler. Default is `false`.
+     * Default is `false`.
      */
     ignoreSystemCrashHandler?: boolean;
     /**
-     * If true, limit the number of crashes uploaded to 1/hour. Default is `false`.
-     *
-     * @platform darwin,win32
-     */
-    rateLimit?: boolean;
-    /**
-     * If true, crash reports will be compressed and uploaded with `Content-Encoding:
-     * gzip`. Not all collection servers support compressed payloads. Default is
-     * `false`.
-     *
-     * @platform darwin,win32
-     */
-    compress?: boolean;
-    /**
-     * Extra string key/value annotations that will be sent along with crash reports
-     * that are generated in the main process. Only string values are supported.
-     * Crashes generated in child processes will not contain these extra parameters to
-     * crash reports generated from child processes, call `addExtraParameter` from the
-     * child process.
+     * An object you can define that will be sent along with the report. Only string
+     * properties are sent correctly. Nested objects are not supported. When using
+     * Windows, the property names and values must be fewer than 64 characters.
      */
     extra?: Record<string, string>;
     /**
-     * Extra string key/value annotations that will be sent along with any crash
-     * reports generated in any process. These annotations cannot be changed once the
-     * crash reporter has been started. If a key is present in both the global extra
-     * parameters and the process-specific extra parameters, then the global one will
-     * take precedence. By default, `productName` and the app version are included, as
-     * well as the Electron version.
+     * Directory to store the crash reports temporarily (only used when the crash
+     * reporter is started via `process.crashReporter.start`).
      */
-    globalExtra?: Record<string, string>;
+    crashesDirectory?: string;
   }
 
   interface CreateFromBitmapOptions {
@@ -12050,13 +11784,13 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * `selectAll`, `reload`, `forceReload`, `toggleDevTools`, `resetZoom`, `zoomIn`,
      * `zoomOut`, `togglefullscreen`, `window`, `minimize`, `close`, `help`, `about`,
      * `services`, `hide`, `hideOthers`, `unhide`, `quit`, `startSpeaking`,
-     * `stopSpeaking`, `zoom`, `front`, `appMenu`, `fileMenu`, `editMenu`, `viewMenu`,
-     * `recentDocuments`, `toggleTabBar`, `selectNextTab`, `selectPreviousTab`,
-     * `mergeAllWindows`, `clearRecentDocuments`, `moveTabToNewWindow` or `windowMenu`
-     * - Define the action of the menu item, when specified the `click` property will
-     * be ignored. See roles.
+     * `stopSpeaking`, `close`, `minimize`, `zoom`, `front`, `appMenu`, `fileMenu`,
+     * `editMenu`, `viewMenu`, `recentDocuments`, `toggleTabBar`, `selectNextTab`,
+     * `selectPreviousTab`, `mergeAllWindows`, `clearRecentDocuments`,
+     * `moveTabToNewWindow` or `windowMenu` - Define the action of the menu item, when
+     * specified the `click` property will be ignored. See roles.
      */
-    role?: ('undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'pasteAndMatchStyle' | 'delete' | 'selectAll' | 'reload' | 'forceReload' | 'toggleDevTools' | 'resetZoom' | 'zoomIn' | 'zoomOut' | 'togglefullscreen' | 'window' | 'minimize' | 'close' | 'help' | 'about' | 'services' | 'hide' | 'hideOthers' | 'unhide' | 'quit' | 'startSpeaking' | 'stopSpeaking' | 'zoom' | 'front' | 'appMenu' | 'fileMenu' | 'editMenu' | 'viewMenu' | 'recentDocuments' | 'toggleTabBar' | 'selectNextTab' | 'selectPreviousTab' | 'mergeAllWindows' | 'clearRecentDocuments' | 'moveTabToNewWindow' | 'windowMenu');
+    role?: ('undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'pasteAndMatchStyle' | 'delete' | 'selectAll' | 'reload' | 'forceReload' | 'toggleDevTools' | 'resetZoom' | 'zoomIn' | 'zoomOut' | 'togglefullscreen' | 'window' | 'minimize' | 'close' | 'help' | 'about' | 'services' | 'hide' | 'hideOthers' | 'unhide' | 'quit' | 'startSpeaking' | 'stopSpeaking' | 'close' | 'minimize' | 'zoom' | 'front' | 'appMenu' | 'fileMenu' | 'editMenu' | 'viewMenu' | 'recentDocuments' | 'toggleTabBar' | 'selectNextTab' | 'selectPreviousTab' | 'mergeAllWindows' | 'clearRecentDocuments' | 'moveTabToNewWindow' | 'windowMenu');
     /**
      * Can be `normal`, `separator`, `submenu`, `checkbox` or `radio`.
      */
@@ -12273,36 +12007,6 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * via `Alt-W` on Windows and Linux.
      */
     normalizeAccessKeys?: boolean;
-  }
-
-  interface MessageDetails {
-    /**
-     * The actual console message
-     */
-    message: string;
-    /**
-     * The version ID of the service worker that sent the log message
-     */
-    versionId: number;
-    /**
-     * The type of source for this message.  Can be `javascript`, `xml`, `network`,
-     * `console-api`, `storage`, `app-cache`, `rendering`, `security`, `deprecation`,
-     * `worker`, `violation`, `intervention`, `recommendation` or `other`.
-     */
-    source: ('javascript' | 'xml' | 'network' | 'console-api' | 'storage' | 'app-cache' | 'rendering' | 'security' | 'deprecation' | 'worker' | 'violation' | 'intervention' | 'recommendation' | 'other');
-    /**
-     * The log level, from 0 to 3.  In order it matches `verbose`, `info`, `warning`
-     * and `error`.
-     */
-    level: number;
-    /**
-     * The URL the message came from
-     */
-    sourceUrl: string;
-    /**
-     * The line number of the source that triggered this console message
-     */
-    lineNumber: number;
   }
 
   interface MoveToApplicationsFolderOptions {
@@ -12615,9 +12319,6 @@ See webContents.sendInputEvent for detailed description of `event` object.
     workingDirectory?: string;
   }
 
-  interface Options {
-  }
-
   interface PageFaviconUpdatedEvent extends Event {
     /**
      * Array of URLs.
@@ -12736,29 +12437,13 @@ See webContents.sendInputEvent for detailed description of `event` object.
 
   interface PrintToPDFOptions {
     /**
-     * the header and footer for the PDF.
-     */
-    headerFooter?: Record<string, string>;
-    /**
-     * `true` for landscape, `false` for portrait.
-     */
-    landscape?: boolean;
-    /**
      * Specifies the type of margins to use. Uses 0 for default margin, 1 for no
-     * margin, and 2 for minimum margin. and `width` in microns.
+     * margin, and 2 for minimum margin.
      */
     marginsType?: number;
     /**
-     * The scale factor of the web page. Can range from 0 to 100.
-     */
-    scaleFactor?: number;
-    /**
-     * The page range to print.
-     */
-    pageRanges?: Record<string, number>;
-    /**
      * Specify page size of the generated PDF. Can be `A3`, `A4`, `A5`, `Legal`,
-     * `Letter`, `Tabloid` or an Object containing `height`
+     * `Letter`, `Tabloid` or an Object containing `height` and `width` in microns.
      */
     pageSize?: (string) | (Size);
     /**
@@ -12769,6 +12454,10 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * Whether to print selection only.
      */
     printSelectionOnly?: boolean;
+    /**
+     * `true` for landscape, `false` for portrait.
+     */
+    landscape?: boolean;
   }
 
   interface Privileges {
@@ -13127,10 +12816,6 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * Function to call when the button is clicked.
      */
     click?: () => void;
-    /**
-     * Whether the button is in an enabled state.  Default is `true`.
-     */
-    enabled?: boolean;
   }
 
   interface TouchBarColorPickerConstructorOptions {
@@ -13316,6 +13001,15 @@ See webContents.sendInputEvent for detailed description of `event` object.
     total: number;
   }
 
+  interface VisibleOnAllWorkspacesOptions {
+    /**
+     * Sets whether the window should be visible above fullscreen windows _deprecated_
+     *
+     * @platform darwin
+     */
+    visibleOnFullScreen?: boolean;
+  }
+
   interface WebContentsPrintOptions {
     /**
      * Don't ask user for print settings. Default is `false`.
@@ -13357,7 +13051,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     copies?: number;
     /**
-     * The page range to print.
+     * The page range to print. Should have two keys: `from` and `to`.
      */
     pageRanges?: Record<string, number>;
     /**
@@ -13365,7 +13059,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * `longEdge`.
      */
     duplexMode?: ('simplex' | 'shortEdge' | 'longEdge');
-    dpi?: Record<string, number>;
+    dpi?: Dpi;
     /**
      * String to be printed as page header.
      */
@@ -13374,11 +13068,6 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * String to be printed as page footer.
      */
     footer?: string;
-    /**
-     * Specify page size of the printed document. Can be `A3`, `A4`, `A5`, `Legal`,
-     * `Letter`, `Tabloid` or an Object containing `height`.
-     */
-    pageSize?: (string) | (Size);
   }
 
   interface WebviewTagPrintOptions {
@@ -13387,67 +13076,28 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     silent?: boolean;
     /**
-     * Prints the background color and image of the web page. Default is `false`.
+     * Also prints the background color and image of the web page. Default is `false`.
      */
     printBackground?: boolean;
     /**
-     * Set the printer device name to use. Must be the system-defined name and not the
-     * 'friendly' name, e.g 'Brother_QL_820NWB' and not 'Brother QL-820NWB'.
+     * Set the printer device name to use. Default is `''`.
      */
     deviceName?: string;
-    /**
-     * Set whether the printed web page will be in color or grayscale. Default is
-     * `true`.
-     */
-    color?: boolean;
-    margins?: Margins;
-    /**
-     * Whether the web page should be printed in landscape mode. Default is `false`.
-     */
-    landscape?: boolean;
-    /**
-     * The scale factor of the web page.
-     */
-    scaleFactor?: number;
-    /**
-     * The number of pages to print per page sheet.
-     */
-    pagesPerSheet?: number;
-    /**
-     * Whether the web page should be collated.
-     */
-    collate?: boolean;
-    /**
-     * The number of copies of the web page to print.
-     */
-    copies?: number;
-    /**
-     * The page range to print.
-     */
-    pageRanges?: Record<string, number>;
-    /**
-     * Set the duplex mode of the printed web page. Can be `simplex`, `shortEdge`, or
-     * `longEdge`.
-     */
-    duplexMode?: ('simplex' | 'shortEdge' | 'longEdge');
-    dpi?: Record<string, number>;
-    /**
-     * String to be printed as page header.
-     */
-    header?: string;
-    /**
-     * String to be printed as page footer.
-     */
-    footer?: string;
-    /**
-     * Specify page size of the printed document. Can be `A3`, `A4`, `A5`, `Legal`,
-     * `Letter`, `Tabloid` or an Object containing `height`.
-     */
-    pageSize?: (string) | (Size);
   }
 
   interface WillNavigateEvent extends Event {
     url: string;
+  }
+
+  interface Dpi {
+    /**
+     * The horizontal dpi.
+     */
+    horizontal?: number;
+    /**
+     * The vertical dpi.
+     */
+    vertical?: number;
   }
 
   interface EditFlags {
@@ -13619,7 +13269,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * options will also be shared between the web pages even when you specified
      * different values for them, including but not limited to `preload`, `sandbox` and
      * `nodeIntegration`. So it is suggested to use exact same `webPreferences` for web
-     * pages with the same `affinity`. _Deprecated_
+     * pages with the same `affinity`. _This property is experimental_
      */
     affinity?: string;
     /**
@@ -13781,7 +13431,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     accessibleTitle?: string;
     /**
-     * Whether to enable the builtin spellchecker. Default is `true`.
+     * Whether to enable the builtin spellchecker. Default is `false`.
      */
     spellcheck?: boolean;
     /**
@@ -13973,6 +13623,12 @@ Takes a V8 heap snapshot and saves it to `filePath`.
      *
      */
     readonly electron: string;
+    /**
+     * A `Boolean` that controls whether or not deprecation warnings are printed to
+     * `stderr` when formerly callback-based APIs converted to Promises are invoked
+     * using callbacks. Setting this to `true` will enable deprecation warnings.
+     */
+    enablePromiseAPIs: boolean;
     /**
      * A `Boolean`, `true` when the current renderer context is the "main" renderer
      * frame. If you want the ID of the current frame you should use
