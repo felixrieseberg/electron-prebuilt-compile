@@ -1,4 +1,4 @@
-// Type definitions for Electron 7.3.2
+// Type definitions for Electron 8.3.4
 // Project: http://electronjs.org/
 // Definitions by: The Electron Team <https://github.com/electron/electron>
 // Definitions: https://github.com/electron/electron-typescript-definitions
@@ -878,8 +878,21 @@ This method can only be called before app is ready.
     /**
      * On Linux, focuses on the first visible window. On macOS, makes the application
      * the active app. On Windows, focuses on the application's first window.
+     * 
+You should seek to use the `steal` option as sparingly as possible.
      */
-    focus(): void;
+    focus(options?: FocusOptions): void;
+    /**
+     * Name of the application handling the protocol, or an empty string if there is no
+     * handler. For instance, if Electron is the default handler of the URL, this could
+     * be `Electron` on Windows and Mac. However, don't rely on the precise format
+     * which is not guaranteed to remain unchanged. Expect a different format on Linux,
+     * possibly with a `.desktop` suffix.
+     *
+     * This method returns the application name of the default handler for the protocol
+     * (aka URI scheme) of a URL.
+     */
+    getApplicationNameForProtocol(url: string): string;
     /**
      * Array of `ProcessMetric` objects that correspond to memory and CPU usage
      * statistics of all the processes associated with the app.
@@ -891,8 +904,6 @@ This method can only be called before app is ready.
     getAppPath(): string;
     /**
      * The current value displayed in the counter badge.
-
-**Deprecated**
      *
      * @platform linux,darwin
      */
@@ -997,8 +1008,6 @@ This method can only be called before app is ready.
      * to the npm modules spec. You should usually also specify a `productName` field,
      * which is your application's full capitalized name, and which will be preferred
      * over `name` by Electron.
-
-**Deprecated**
      */
     getName(): string;
     /**
@@ -1050,8 +1059,6 @@ This method can only be called before app is ready.
      * has been detected. See
      * https://www.chromium.org/developers/design-documents/accessibility for more
      * details.
-
-**Deprecated**
      *
      * @platform darwin,win32
      */
@@ -1202,8 +1209,6 @@ This method can only be called before app is ready.
      * that order, in the bundle returned by the NSBundle class method main. The first
      * file found is used, and if none is found, the info area is left blank. See Apple
      * documentation for more information.
-     *
-     * @platform darwin,linux
      */
     setAboutPanelOptions(options: AboutPanelOptionsOptions): void;
     /**
@@ -1215,8 +1220,6 @@ This method can only be called before app is ready.
      *
      * **Note:** Rendering accessibility tree can significantly affect the performance
      * of your app. It should not be enabled by default.
-
-**Deprecated**
      *
      * @platform darwin,win32
      */
@@ -1271,8 +1274,6 @@ This method can only be called before app is ready.
      *
      * **Note:** Unity launcher requires the existence of a `.desktop` file to work,
      * for more information please read Desktop Environment Integration.
-     * 
-**Deprecated**
      *
      * @platform linux,darwin
      */
@@ -1324,8 +1325,9 @@ Here's a very simple example of creating a custom Jump List:
     setLoginItemSettings(settings: Settings): void;
     /**
      * Overrides the current application's name.
-
-**Deprecated**
+     *
+     * **Note:** This function overrides the name used internally by Electron; it does
+     * not affect the name that the OS uses.
      */
     setName(name: string): void;
     /**
@@ -1370,8 +1372,6 @@ Here's a very simple example of creating a custom Jump List:
     /**
      * Show the app's about panel options. These options can be overridden with
      * `app.setAboutPanelOptions(options)`.
-     *
-     * @platform darwin,linux
      */
     showAboutPanel(): void;
     /**
@@ -1976,13 +1976,13 @@ __Note__: On macOS this event is an alias of `moved`.
     addListener(event: 'unresponsive', listener: Function): this;
     removeListener(event: 'unresponsive', listener: Function): this;
     /**
-     * Emitted before the window is moved. Calling `event.preventDefault()` will
-     * prevent the window from being moved.
+     * Emitted before the window is moved. On Windows, calling `event.preventDefault()`
+     * will prevent the window from being moved.
      *
      * Note that this is only emitted when the window is being resized manually.
      * Resizing the window with `setBounds`/`setSize` will not emit this event.
      *
-     * @platform win32
+     * @platform darwin,win32
      */
     on(event: 'will-move', listener: (event: Event,
                                       /**
@@ -2072,9 +2072,10 @@ __Note__: On macOS this event is an alias of `moved`.
      */
     static fromId(id: number): BrowserWindow;
     /**
-     * The window that owns the given `webContents`.
+     * The window that owns the given `webContents` or `null` if the contents are not
+     * owned by a window.
      */
-    static fromWebContents(webContents: WebContents): BrowserWindow;
+    static fromWebContents(webContents: WebContents): (BrowserWindow) | (null);
     /**
      * An array of all opened browser windows.
      */
@@ -2175,8 +2176,8 @@ __Note__: On macOS this event is an alias of `moved`.
      */
     getBounds(): Rectangle;
     /**
-     * an BrowserView what is attached. Returns `null` if none is attached. Throw error
-     * if multiple BrowserViews is attached.
+     * The `BrowserView` attached to `win`. Returns `null` if one is not attached.
+     * Throws an error if multiple `BrowserView`s are attached.
      *
      * @experimental
      */
@@ -2207,6 +2208,16 @@ __Note__: On macOS this event is an alias of `moved`.
      * Contains the window's maximum width and height.
      */
     getMaximumSize(): number[];
+    /**
+     * Window id in the format of DesktopCapturerSource's id. For example
+     * "window:1234:0".
+     *
+     * More precisely the format is `window:id:other_id` where `id` is `HWND` on
+     * Windows, `CGWindowID` (`uint64_t`) on macOS and `Window` (`unsigned long`) on
+     * Linux. `other_id` is used to identify web contents (tabs) so within the same top
+     * level window.
+     */
+    getMediaSourceId(): string;
     /**
      * Contains the window's minimum width and height.
      */
@@ -2257,6 +2268,13 @@ __Note__: On macOS this event is an alias of `moved`.
      * native window.
      */
     getTitle(): string;
+    /**
+     * The current position for the traffic light buttons. Can only be used with
+     * `titleBarStyle` set to `hidden`.
+     *
+     * @platform darwin
+     */
+    getTrafficLightPosition(): Point;
     /**
      * Whether the window has a shadow.
      */
@@ -2432,6 +2450,12 @@ On Linux always returns `true`.
      * the Dock.
      */
     minimize(): void;
+    /**
+     * Moves window above the source window in the sense of z-order. If the
+     * `mediaSourceId` is not of type window or if the window does not exist then this
+     * method throws an error.
+     */
+    moveAbove(mediaSourceId: string): void;
     /**
      * Moves the current tab into a new window if native tabs are enabled and there is
      * more than one tab in the current window.
@@ -2808,6 +2832,13 @@ On macOS it does not remove the focus from the window.
      */
     setTouchBar(touchBar: (TouchBar) | (null)): void;
     /**
+     * Set a custom position for the traffic light buttons. Can only be used with
+     * `titleBarStyle` set to `hidden`.
+     *
+     * @platform darwin
+     */
+    setTrafficLightPosition(position: Point): void;
+    /**
      * Adds a vibrancy effect to the browser window. Passing `null` or an empty string
      * will remove the vibrancy effect on the window.
      *
@@ -2868,6 +2899,7 @@ This cannot be called when `titleBarStyle` is set to `customButtonsOnHover`.
      * Unmaximizes the window.
      */
     unmaximize(): void;
+    accessibleTitle: string;
     autoHideMenuBar: boolean;
     closable: boolean;
     excludedFromShownWindowsMenu: boolean;
@@ -3505,6 +3537,10 @@ Sets a cookie with `details`.
      */
     addExtraParameter(key: string, value: string): void;
     /**
+     * The directory where crashes are temporarily stored before being uploaded.
+     */
+    getCrashesDirectory(): string;
+    /**
      * Returns the date and ID of the last crash report. Only crash reports that have
      * been uploaded will be returned; even if a crash report is present on disk it
      * will not be returned until it is uploaded. In the case that there are no
@@ -3621,7 +3657,7 @@ Sets a cookie with `details`.
                                      * Event parameters defined by the 'parameters' attribute in the remote debugging
                                      * protocol.
                                      */
-                                    params: unknown) => void): this;
+                                    params: any) => void): this;
     once(event: 'message', listener: (event: Event,
                                     /**
                                      * Method name.
@@ -3631,7 +3667,7 @@ Sets a cookie with `details`.
                                      * Event parameters defined by the 'parameters' attribute in the remote debugging
                                      * protocol.
                                      */
-                                    params: unknown) => void): this;
+                                    params: any) => void): this;
     addListener(event: 'message', listener: (event: Event,
                                     /**
                                      * Method name.
@@ -3641,7 +3677,7 @@ Sets a cookie with `details`.
                                      * Event parameters defined by the 'parameters' attribute in the remote debugging
                                      * protocol.
                                      */
-                                    params: unknown) => void): this;
+                                    params: any) => void): this;
     removeListener(event: 'message', listener: (event: Event,
                                     /**
                                      * Method name.
@@ -3651,7 +3687,7 @@ Sets a cookie with `details`.
                                      * Event parameters defined by the 'parameters' attribute in the remote debugging
                                      * protocol.
                                      */
-                                    params: unknown) => void): this;
+                                    params: any) => void): this;
     /**
      * Attaches the debugger to the `webContents`.
      */
@@ -3682,6 +3718,10 @@ Send given command to the debugging target.
      * Resolves with an array of `DesktopCapturerSource` objects, each
      * `DesktopCapturerSource` represents a screen or an individual window that can be
      * captured.
+     *
+     * **Note** Capturing the screen contents requires user consent on macOS 10.15
+     * Catalina or higher, which can detected by
+     * `systemPreferences.getMediaAccessStatus`.
      */
     getSources(options: SourcesOptions): Promise<Electron.DesktopCapturerSource[]>;
   }
@@ -3806,9 +3846,8 @@ Send given command to the debugging target.
      * It returns the index of the clicked button.
      *
      * The `browserWindow` argument allows the dialog to attach itself to a parent
-     * window, making it modal. If the `browserWindow` is not shown, the dialog will
-     * not be attached to it. In that case it will be displayed as an independent
-     * window.
+     * window, making it modal. If `browserWindow` is not shown dialog will not be
+     * attached to it. In such case It will be displayed as independed window.
      */
     showMessageBoxSync(browserWindow: BrowserWindow, options: MessageBoxSyncOptions): number;
     /**
@@ -3818,9 +3857,8 @@ Send given command to the debugging target.
      * It returns the index of the clicked button.
      *
      * The `browserWindow` argument allows the dialog to attach itself to a parent
-     * window, making it modal. If the `browserWindow` is not shown, the dialog will
-     * not be attached to it. In that case it will be displayed as an independent
-     * window.
+     * window, making it modal. If `browserWindow` is not shown dialog will not be
+     * attached to it. In such case It will be displayed as independed window.
      */
     showMessageBoxSync(options: MessageBoxSyncOptions): number;
     /**
@@ -3893,7 +3931,7 @@ Send given command to the debugging target.
      * and a directory selector, so if you set `properties` to `['openFile',
      * 'openDirectory']` on these platforms, a directory selector will be shown.
      */
-    showOpenDialogSync(options: OpenDialogSyncOptions): (string[]) | (undefined);
+    showOpenDialogSync(browserWindow: BrowserWindow, options: OpenDialogSyncOptions): (string[]) | (undefined);
     /**
      * the file paths chosen by the user; if the dialog is cancelled it returns
      * `undefined`.
@@ -3912,28 +3950,7 @@ Send given command to the debugging target.
      * and a directory selector, so if you set `properties` to `['openFile',
      * 'openDirectory']` on these platforms, a directory selector will be shown.
      */
-    showOpenDialogSync(browserWindow: BrowserWindow, options: OpenDialogSyncOptions): (string[]) | (undefined);
-    /**
-     * Resolve with an object containing the following:
-     *
-     * * `canceled` Boolean - whether or not the dialog was canceled.
-     * * `filePath` String (optional) - If the dialog is canceled, this will be
-     * `undefined`.
-     * * `bookmark` String (optional) _macOS_ _mas_ - Base64 encoded string which
-     * contains the security scoped bookmark data for the saved file.
-     * `securityScopedBookmarks` must be enabled for this to be present. (For return
-     * values, see table here.)
-     *
-     * The `browserWindow` argument allows the dialog to attach itself to a parent
-     * window, making it modal.
-     *
-     * The `filters` specifies an array of file types that can be displayed, see
-     * `dialog.showOpenDialog` for an example.
-     *
-     * **Note:** On macOS, using the asynchronous version is recommended to avoid
-     * issues when expanding and collapsing the dialog.
-     */
-    showSaveDialog(options: SaveDialogOptions): Promise<Electron.SaveDialogReturnValue>;
+    showOpenDialogSync(options: OpenDialogSyncOptions): (string[]) | (undefined);
     /**
      * Resolve with an object containing the following:
      *
@@ -3956,16 +3973,26 @@ Send given command to the debugging target.
      */
     showSaveDialog(browserWindow: BrowserWindow, options: SaveDialogOptions): Promise<Electron.SaveDialogReturnValue>;
     /**
-     * the path of the file chosen by the user; if the dialog is cancelled it returns
+     * Resolve with an object containing the following:
+     *
+     * * `canceled` Boolean - whether or not the dialog was canceled.
+     * * `filePath` String (optional) - If the dialog is canceled, this will be
      * `undefined`.
+     * * `bookmark` String (optional) _macOS_ _mas_ - Base64 encoded string which
+     * contains the security scoped bookmark data for the saved file.
+     * `securityScopedBookmarks` must be enabled for this to be present. (For return
+     * values, see table here.)
      *
      * The `browserWindow` argument allows the dialog to attach itself to a parent
      * window, making it modal.
      *
      * The `filters` specifies an array of file types that can be displayed, see
      * `dialog.showOpenDialog` for an example.
+     *
+     * **Note:** On macOS, using the asynchronous version is recommended to avoid
+     * issues when expanding and collapsing the dialog.
      */
-    showSaveDialogSync(options: SaveDialogSyncOptions): (string) | (undefined);
+    showSaveDialog(options: SaveDialogOptions): Promise<Electron.SaveDialogReturnValue>;
     /**
      * the path of the file chosen by the user; if the dialog is cancelled it returns
      * `undefined`.
@@ -3977,6 +4004,17 @@ Send given command to the debugging target.
      * `dialog.showOpenDialog` for an example.
      */
     showSaveDialogSync(browserWindow: BrowserWindow, options: SaveDialogSyncOptions): (string) | (undefined);
+    /**
+     * the path of the file chosen by the user; if the dialog is cancelled it returns
+     * `undefined`.
+     *
+     * The `browserWindow` argument allows the dialog to attach itself to a parent
+     * window, making it modal.
+     *
+     * The `filters` specifies an array of file types that can be displayed, see
+     * `dialog.showOpenDialog` for an example.
+     */
+    showSaveDialogSync(options: SaveDialogSyncOptions): (string) | (undefined);
   }
 
   interface Display {
@@ -4220,8 +4258,6 @@ Send given command to the debugging target.
      * The save path of the download item. This will be either the path set via
      * `downloadItem.setSavePath(path)` or the path selected from the shown save
      * dialog.
-
-**Deprecated: use the `savePath` property instead.**
      */
     getSavePath(): string;
     /**
@@ -4281,8 +4317,6 @@ If the size is unknown, it returns 0.
      * The API is only available in session's `will-download` callback function. If
      * user doesn't set the save path via the API, Electron will use the original
      * routine to determine the save path; this usually prompts a save dialog.
-     * 
-**Deprecated: use the `savePath` property instead.**
      */
     setSavePath(path: string): void;
     savePath: string;
@@ -4550,11 +4584,11 @@ Retrieves the product descriptions.
     // Docs: http://electronjs.org/docs/api/structures/input-event
 
     /**
-     * An array of modifiers of the event, can be `shift`, `control`, `alt`, `meta`,
-     * `isKeypad`, `isAutoRepeat`, `leftButtonDown`, `middleButtonDown`,
-     * `rightButtonDown`, `capsLock`, `numLock`, `left`, `right`.
+     * An array of modifiers of the event, can be `shift`, `control`, `ctrl`, `alt`,
+     * `meta`, `command`, `cmd`, `isKeypad`, `isAutoRepeat`, `leftButtonDown`,
+     * `middleButtonDown`, `rightButtonDown`, `capsLock`, `numLock`, `left`, `right`.
      */
-    modifiers: Array<'shift' | 'control' | 'alt' | 'meta' | 'isKeypad' | 'isAutoRepeat' | 'leftButtonDown' | 'middleButtonDown' | 'rightButtonDown' | 'capsLock' | 'numLock' | 'left' | 'right'>;
+    modifiers?: Array<'shift' | 'control' | 'ctrl' | 'alt' | 'meta' | 'command' | 'cmd' | 'isKeypad' | 'isAutoRepeat' | 'leftButtonDown' | 'middleButtonDown' | 'rightButtonDown' | 'capsLock' | 'numLock' | 'left' | 'right'>;
   }
 
   interface IOCounters {
@@ -4680,9 +4714,15 @@ Retrieves the product descriptions.
     /**
      * Resolves with the response from the main process.
      *
-     * Send a message to the main process asynchronously via `channel` and expect an
-     * asynchronous result. Arguments will be serialized as JSON internally and hence
-     * no functions or prototype chain will be included.
+     * Send a message to the main process via `channel` and expect a result
+     * asynchronously. Arguments will be serialized with the Structured Clone
+     * Algorithm, just like `postMessage`, so prototype chains will not be included.
+     * Sending Functions, Promises, Symbols, WeakMaps, or WeakSets will throw an
+     * exception.
+     *
+     * > **NOTE**: Sending non-standard JavaScript types such as DOM objects or special
+     * Electron objects is deprecated, and will begin throwing an exception starting
+     * with Electron 9.
      *
      * The main process should listen for `channel` with `ipcMain.handle()`.
      * 
@@ -4709,9 +4749,14 @@ For example:
      */
     removeListener(channel: string, listener: (...args: any[]) => void): this;
     /**
-     * Send a message to the main process asynchronously via `channel`, you can also
-     * send arbitrary arguments. Arguments will be serialized as JSON internally and
-     * hence no functions or prototype chain will be included.
+     * Send an asynchronous message to the main process via `channel`, along with
+     * arguments. Arguments will be serialized with the Structured Clone Algorithm,
+     * just like `postMessage`, so prototype chains will not be included. Sending
+     * Functions, Promises, Symbols, WeakMaps, or WeakSets will throw an exception.
+     *
+     * > **NOTE**: Sending non-standard JavaScript types such as DOM objects or special
+     * Electron objects is deprecated, and will begin throwing an exception starting
+     * with Electron 9.
      *
      * The main process handles it by listening for `channel` with the `ipcMain`
      * module.
@@ -4720,15 +4765,21 @@ For example:
     /**
      * The value sent back by the `ipcMain` handler.
      *
-     * Send a message to the main process synchronously via `channel`, you can also
-     * send arbitrary arguments. Arguments will be serialized in JSON internally and
-     * hence no functions or prototype chain will be included.
+     * Send a message to the main process via `channel` and expect a result
+     * synchronously. Arguments will be serialized with the Structured Clone Algorithm,
+     * just like `postMessage`, so prototype chains will not be included. Sending
+     * Functions, Promises, Symbols, WeakMaps, or WeakSets will throw an exception.
+     *
+     * > **NOTE**: Sending non-standard JavaScript types such as DOM objects or special
+     * Electron objects is deprecated, and will begin throwing an exception starting
+     * with Electron 9.
      *
      * The main process handles it by listening for `channel` with `ipcMain` module,
      * and replies by setting `event.returnValue`.
      *
-     * **Note:** Sending a synchronous message will block the whole renderer process,
-     * unless you know what you are doing you should never use it.
+     * > :warning: **WARNING**: Sending a synchronous message will block the whole
+     * renderer process until the reply is received, so use this method only as a last
+     * resort. It's much better to use the asynchronous version, `invoke()`.
      */
     sendSync(channel: string, ...args: any[]): any;
     /**
@@ -5097,7 +5148,7 @@ For example:
      * Creates a new `NativeImage` instance from the NSImage that maps to the given
      * image name. See `System Icons` for a list of possible values.
      *
-     * The `hslShift` is applied to the image with the following rules
+     * The `hslShift` is applied to the image with the following rules:
      *
      * * `hsl_shift[0]` (hue): The absolute hue value for the image - 0 and 1 map to 0
      * and 360 on the hue color wheel (red).
@@ -5148,9 +5199,9 @@ where `SYSTEM_IMAGE_NAME` should be replaced with any value from this list.
     /**
      * A Buffer that contains the image's raw bitmap pixel data.
      *
-     * The difference between `getBitmap()` and `toBitmap()` is, `getBitmap()` does not
-     * copy the bitmap data, so you have to use the returned Buffer immediately in
-     * current event loop tick, otherwise the data might be changed or destroyed.
+     * The difference between `getBitmap()` and `toBitmap()` is that `getBitmap()` does
+     * not copy the bitmap data, so you have to use the returned Buffer immediately in
+     * current event loop tick; otherwise the data might be changed or destroyed.
      */
     getBitmap(options?: BitmapOptions): Buffer;
     /**
@@ -5171,8 +5222,6 @@ where `SYSTEM_IMAGE_NAME` should be replaced with any value from this list.
     isEmpty(): boolean;
     /**
      * Whether the image is a template image.
-
-**Deprecated**
      */
     isTemplateImage(): boolean;
     /**
@@ -5184,8 +5233,6 @@ where `SYSTEM_IMAGE_NAME` should be replaced with any value from this list.
     resize(options: ResizeOptions): NativeImage;
     /**
      * Marks the image as a template image.
-
-**Deprecated**
      */
     setTemplateImage(option: boolean): void;
     /**
@@ -5438,7 +5485,9 @@ Starts recording network events to `path`.
     silent: boolean;
     sound: string;
     subtitle: string;
+    timeoutType: ('default' | 'never');
     title: string;
+    urgency: ('normal' | 'critical' | 'low');
   }
 
   interface NotificationAction {
@@ -6203,8 +6252,6 @@ e.g.
     /**
      * Emitted when a render process requests preconnection to a URL, generally due to
      * a resource hint.
-     *
-     * @experimental
      */
     on(event: 'preconnect', listener: (event: Event,
                                        /**
@@ -6247,6 +6294,100 @@ e.g.
                                         */
                                        allowCredentials: boolean) => void): this;
     /**
+     * Emitted when a hunspell dictionary file starts downloading
+     */
+    on(event: 'spellcheck-dictionary-download-begin', listener: (event: Event,
+                                                                 /**
+                                                                  * The language code of the dictionary file
+                                                                  */
+                                                                 languageCode: string) => void): this;
+    once(event: 'spellcheck-dictionary-download-begin', listener: (event: Event,
+                                                                 /**
+                                                                  * The language code of the dictionary file
+                                                                  */
+                                                                 languageCode: string) => void): this;
+    addListener(event: 'spellcheck-dictionary-download-begin', listener: (event: Event,
+                                                                 /**
+                                                                  * The language code of the dictionary file
+                                                                  */
+                                                                 languageCode: string) => void): this;
+    removeListener(event: 'spellcheck-dictionary-download-begin', listener: (event: Event,
+                                                                 /**
+                                                                  * The language code of the dictionary file
+                                                                  */
+                                                                 languageCode: string) => void): this;
+    /**
+     * Emitted when a hunspell dictionary file download fails.  For details on the
+     * failure you should collect a netlog and inspect the download request.
+     */
+    on(event: 'spellcheck-dictionary-download-failure', listener: (event: Event,
+                                                                   /**
+                                                                    * The language code of the dictionary file
+                                                                    */
+                                                                   languageCode: string) => void): this;
+    once(event: 'spellcheck-dictionary-download-failure', listener: (event: Event,
+                                                                   /**
+                                                                    * The language code of the dictionary file
+                                                                    */
+                                                                   languageCode: string) => void): this;
+    addListener(event: 'spellcheck-dictionary-download-failure', listener: (event: Event,
+                                                                   /**
+                                                                    * The language code of the dictionary file
+                                                                    */
+                                                                   languageCode: string) => void): this;
+    removeListener(event: 'spellcheck-dictionary-download-failure', listener: (event: Event,
+                                                                   /**
+                                                                    * The language code of the dictionary file
+                                                                    */
+                                                                   languageCode: string) => void): this;
+    /**
+     * Emitted when a hunspell dictionary file has been successfully downloaded
+     */
+    on(event: 'spellcheck-dictionary-download-success', listener: (event: Event,
+                                                                   /**
+                                                                    * The language code of the dictionary file
+                                                                    */
+                                                                   languageCode: string) => void): this;
+    once(event: 'spellcheck-dictionary-download-success', listener: (event: Event,
+                                                                   /**
+                                                                    * The language code of the dictionary file
+                                                                    */
+                                                                   languageCode: string) => void): this;
+    addListener(event: 'spellcheck-dictionary-download-success', listener: (event: Event,
+                                                                   /**
+                                                                    * The language code of the dictionary file
+                                                                    */
+                                                                   languageCode: string) => void): this;
+    removeListener(event: 'spellcheck-dictionary-download-success', listener: (event: Event,
+                                                                   /**
+                                                                    * The language code of the dictionary file
+                                                                    */
+                                                                   languageCode: string) => void): this;
+    /**
+     * Emitted when a hunspell dictionary file has been successfully initialized. This
+     * occurs after the file has been downloaded.
+     */
+    on(event: 'spellcheck-dictionary-initialized', listener: (event: Event,
+                                                              /**
+                                                               * The language code of the dictionary file
+                                                               */
+                                                              languageCode: string) => void): this;
+    once(event: 'spellcheck-dictionary-initialized', listener: (event: Event,
+                                                              /**
+                                                               * The language code of the dictionary file
+                                                               */
+                                                              languageCode: string) => void): this;
+    addListener(event: 'spellcheck-dictionary-initialized', listener: (event: Event,
+                                                              /**
+                                                               * The language code of the dictionary file
+                                                               */
+                                                              languageCode: string) => void): this;
+    removeListener(event: 'spellcheck-dictionary-initialized', listener: (event: Event,
+                                                              /**
+                                                               * The language code of the dictionary file
+                                                               */
+                                                              languageCode: string) => void): this;
+    /**
      * Emitted when Electron is about to download `item` in `webContents`.
      *
      * Calling `event.preventDefault()` will cancel the download and `item` will not be
@@ -6264,6 +6405,13 @@ e.g.
     removeListener(event: 'will-download', listener: (event: Event,
                                           item: DownloadItem,
                                           webContents: WebContents) => void): this;
+    /**
+     * Whether the word was successfully written to the custom dictionary.
+     *
+     * **Note:** On macOS and Windows 10 this word will be written to the OS custom
+     * dictionary as well
+     */
+    addWordToSpellCheckerDictionary(word: string): boolean;
     /**
      * Dynamically sets whether to always send credentials for HTTP NTLM or Negotiate
      * authentication.
@@ -6303,6 +6451,14 @@ Clears the host resolver cache.
      */
     disableNetworkEmulation(): void;
     /**
+     * Initiates a download of the resource at `url`. The API will generate a
+     * DownloadItem that can be accessed with the will-download event.
+     *
+     * **Note:** This does not perform any security checks that relate to a page's
+     * origin, unlike `webContents.downloadURL`.
+     */
+    downloadURL(url: string): void;
+    /**
      * Emulates network with the given configuration for the `session`.
      */
     enableNetworkEmulation(options: EnableNetworkEmulationOptions): void;
@@ -6323,13 +6479,21 @@ Clears the host resolver cache.
      */
     getPreloads(): string[];
     /**
+     * An array of language codes the spellchecker is enabled for.  If this list is
+     * empty the spellchecker will fallback to using `en-US`.  By default on launch if
+     * this setting is an empty list Electron will try to populate this setting with
+     * the current OS locale.  This setting is persisted across restarts.
+     *
+     * **Note:** On macOS the OS spellchecker is used and has it's own list of
+     * languages.  This API is a no-op on macOS.
+     */
+    getSpellCheckerLanguages(): string[];
+    /**
      * The user agent for this session.
      */
     getUserAgent(): string;
     /**
      * Preconnects the given number of sockets to an origin.
-     *
-     * @experimental
      */
     preconnect(options: PreconnectOptions): void;
     /**
@@ -6345,7 +6509,7 @@ Clears the host resolver cache.
      * Calling `setCertificateVerifyProc(null)` will revert back to default certificate
      * verify proc.
      */
-    setCertificateVerifyProc(proc: (request: ProcRequest, callback: (verificationResult: number) => void) => void): void;
+    setCertificateVerifyProc(proc: ((request: CertificateVerifyProcProcRequest, callback: (verificationResult: number) => void) => void) | (null)): void;
     /**
      * Sets download saving directory. By default, the download directory will be the
      * `Downloads` under the respective app folder.
@@ -6425,6 +6589,36 @@ Clears the host resolver cache.
      */
     setProxy(config: Config): Promise<void>;
     /**
+     * By default Electron will download hunspell dictionaries from the Chromium CDN.
+     * If you want to override this behavior you can use this API to point the
+     * dictionary downloader at your own hosted version of the hunspell dictionaries.
+     * We publish a `hunspell_dictionaries.zip` file with each release which contains
+     * the files you need to host here, the file server must be **case insensitive**
+     * you must upload each file twice, once with the case it has in the ZIP file and
+     * once with the filename as all lower case.
+     *
+     * If the files present in `hunspell_dictionaries.zip` are available at
+     * `https://example.com/dictionaries/language-code.bdic` then you should call this
+     * api with
+     * `ses.setSpellCheckerDictionaryDownloadURL('https://example.com/dictionaries/')`.
+     *  Please note the trailing slash.  The URL to the dictionaries is formed as
+     * `${url}${filename}`.
+     *
+     * **Note:** On macOS the OS spellchecker is used and therefore we do not download
+     * any dictionary files.  This API is a no-op on macOS.
+     */
+    setSpellCheckerDictionaryDownloadURL(url: string): void;
+    /**
+     * The built in spellchecker does not automatically detect what language a user is
+     * typing in.  In order for the spell checker to correctly check their words you
+     * must call this API with an array of language codes.  You can get the list of
+     * supported language codes with the `ses.availableSpellCheckerLanguages` property.
+     *
+     * **Note:** On macOS the OS spellchecker is used and will detect your language
+     * automatically.  This API is a no-op on macOS.
+     */
+    setSpellCheckerLanguages(languages: string[]): void;
+    /**
      * Overrides the `userAgent` and `acceptLanguages` for this session.
      *
      * The `acceptLanguages` must a comma separated ordered list of language codes, for
@@ -6434,10 +6628,25 @@ Clears the host resolver cache.
      * `webContents.setUserAgent` to override the session-wide user agent.
      */
     setUserAgent(userAgent: string, acceptLanguages?: string): void;
+    readonly availableSpellCheckerLanguages: string[];
     readonly cookies: Cookies;
     readonly netLog: NetLog;
     readonly protocol: Protocol;
     readonly webRequest: WebRequest;
+  }
+
+  interface SharedWorkerInfo {
+
+    // Docs: http://electronjs.org/docs/api/structures/shared-worker-info
+
+    /**
+     * The unique id of the shared worker.
+     */
+    id: string;
+    /**
+     * The url of the shared worker.
+     */
+    url: string;
   }
 
   interface Shell {
@@ -6449,11 +6658,11 @@ Clears the host resolver cache.
      */
     beep(): void;
     /**
-     * Whether the item was successfully moved to the trash.
+     * Whether the item was successfully moved to the trash or otherwise deleted.
      * 
 Move the given file to trash and returns a boolean status for the operation.
      */
-    moveItemToTrash(fullPath: string): boolean;
+    moveItemToTrash(fullPath: string, deleteOnFail?: boolean): boolean;
     /**
      * Open the given external protocol URL in the desktop's default manner. (For
      * example, mailto: URLs in the user's default mail agent).
@@ -6716,8 +6925,6 @@ Returns an object with system animation settings.
      * Gets the macOS appearance setting that you have declared you want for your
      * application, maps to NSApplication.appearance. You can use the
      * `setAppLevelAppearance` API to set this value.
-
-**Deprecated**
      *
      * @deprecated
      * @platform darwin
@@ -6727,24 +6934,19 @@ Returns an object with system animation settings.
      * The system color setting in RGB hexadecimal form (`#ABCDEF`). See the Windows
      * docs and the MacOS docs for more details.
      *
+     * The following colors are only available on macOS 10.14: `find-highlight`,
+     * `selected-content-background`, `separator`,
+     * `unemphasized-selected-content-background`,
+     * `unemphasized-selected-text-background`, and `unemphasized-selected-text`.
+     *
      * @platform win32,darwin
      */
-    getColor(color: '3d-dark-shadow' | '3d-face' | '3d-highlight' | '3d-light' | '3d-shadow' | 'active-border' | 'active-caption' | 'active-caption-gradient' | 'app-workspace' | 'button-text' | 'caption-text' | 'desktop' | 'disabled-text' | 'highlight' | 'highlight-text' | 'hotlight' | 'inactive-border' | 'inactive-caption' | 'inactive-caption-gradient' | 'inactive-caption-text' | 'info-background' | 'info-text' | 'menu' | 'menu-highlight' | 'menubar' | 'menu-text' | 'scrollbar' | 'window' | 'window-frame' | 'window-text' | 'alternate-selected-control-text' | 'control-background' | 'control' | 'control-text' | 'disabled-control-text' | 'find-highlight' | 'grid' | 'header-text' | 'highlight' | 'keyboard-focus-indicator' | 'label' | 'link' | 'placeholder-text' | 'quaternary-label' | 'scrubber-textured-background' | 'secondary-label' | 'selected-content-background' | 'selected-control' | 'selected-control-text' | 'selected-menu-item' | 'selected-text-background' | 'selected-text' | 'separator' | 'shadow' | 'tertiary-label' | 'text-background' | 'text' | 'under-page-background' | 'unemphasized-selected-content-background' | 'unemphasized-selected-text-background' | 'unemphasized-selected-text' | 'window-background' | 'window-frame-text'): string;
+    getColor(color: '3d-dark-shadow' | '3d-face' | '3d-highlight' | '3d-light' | '3d-shadow' | 'active-border' | 'active-caption' | 'active-caption-gradient' | 'app-workspace' | 'button-text' | 'caption-text' | 'desktop' | 'disabled-text' | 'highlight' | 'highlight-text' | 'hotlight' | 'inactive-border' | 'inactive-caption' | 'inactive-caption-gradient' | 'inactive-caption-text' | 'info-background' | 'info-text' | 'menu' | 'menu-highlight' | 'menubar' | 'menu-text' | 'scrollbar' | 'window' | 'window-frame' | 'window-text' | 'alternate-selected-control-text' | 'control-background' | 'control' | 'control-text' | 'disabled-control-text' | 'find-highlight' | 'grid' | 'header-text' | 'highlight' | 'keyboard-focus-indicator' | 'label' | 'link' | 'placeholder-text' | 'quaternary-label' | 'scrubber-textured-background' | 'secondary-label' | 'selected-content-background' | 'selected-control' | 'selected-control-text' | 'selected-menu-item-text' | 'selected-text-background' | 'selected-text' | 'separator' | 'shadow' | 'tertiary-label' | 'text-background' | 'text' | 'under-page-background' | 'unemphasized-selected-content-background' | 'unemphasized-selected-text-background' | 'unemphasized-selected-text' | 'window-background' | 'window-frame-text'): string;
     /**
      * Can be `dark`, `light` or `unknown`.
      *
      * Gets the macOS appearance setting that is currently applied to your application,
      * maps to NSApplication.effectiveAppearance
-     *
-     * Please note that until Electron is built targeting the 10.14 SDK, your
-     * application's `effectiveAppearance` will default to 'light' and won't inherit
-     * the OS preference. In the interim in order for your application to inherit the
-     * OS preference you must set the `NSRequiresAquaSystemAppearance` key in your apps
-     * `Info.plist` to `false`.  If you are using `electron-packager` or
-     * `electron-forge` just set the `enableDarwinDarkMode` packager option to `true`.
-     * See the Electron Packager API for more details.
-
-**Deprecated**
      *
      * @platform darwin
      */
@@ -6752,12 +6954,14 @@ Returns an object with system animation settings.
     /**
      * Can be `not-determined`, `granted`, `denied`, `restricted` or `unknown`.
      *
-     * This user consent was not required until macOS 10.14 Mojave, so this method will
-     * always return `granted` if your system is running 10.13 High Sierra or lower.
+     * This user consent was not required on macOS 10.13 High Sierra or lower so this
+     * method will always return `granted`. macOS 10.14 Mojave or higher requires
+     * consent for `microphone` and `camera` access. macOS 10.15 Catalina or higher
+     * requires consent for `screen` access.
      *
      * @platform darwin
      */
-    getMediaAccessStatus(mediaType: string): ('not-determined' | 'granted' | 'denied' | 'restricted' | 'unknown');
+    getMediaAccessStatus(mediaType: 'microphone' | 'camera' | 'screen'): ('not-determined' | 'granted' | 'denied' | 'restricted' | 'unknown');
     /**
      * The standard system color formatted as `#RRGGBBAA`.
      *
@@ -6810,7 +7014,7 @@ Returns an object with system animation settings.
     /**
      * `true` if a high contrast theme is active, `false` otherwise.
      *
-     * **Depreacted:** Should use the new `nativeTheme.shouldUseHighContrastColors`
+     * **Deprecated:** Should use the new `nativeTheme.shouldUseHighContrastColors`
      * API.
      *
      * @deprecated
@@ -6894,8 +7098,6 @@ Returns an object with system animation settings.
     /**
      * Sets the appearance setting for your application, this should override the
      * system default and override the value of `getEffectiveAppearance`.
-     * 
-**Deprecated**
      *
      * @deprecated
      * @platform darwin
@@ -6995,14 +7197,6 @@ This property is only available on macOS 10.14 Mojave or newer.
      * Returns the macOS appearance setting that is currently applied to your
      * application, maps to NSApplication.effectiveAppearance
      *
-     * Please note that until Electron is built targeting the 10.14 SDK, your
-     * application's `effectiveAppearance` will default to 'light' and won't inherit
-     * the OS preference. In the interim in order for your application to inherit the
-     * OS preference you must set the `NSRequiresAquaSystemAppearance` key in your apps
-     * `Info.plist` to `false`.  If you are using `electron-packager` or
-     * `electron-forge` just set the `enableDarwinDarkMode` packager option to `true`.
-     * See the Electron Packager API for more details.
-     *
      * @platform darwin
      */
     readonly effectiveAppearance: ('dark' | 'light' | 'unknown');
@@ -7095,6 +7289,7 @@ This property is only available on macOS 10.14 Mojave or newer.
      * TouchBarButton
      */
     constructor(options: TouchBarButtonConstructorOptions);
+    accessibilityLabel: string;
     backgroundColor: string;
     icon: NativeImage;
     label: string;
@@ -7130,6 +7325,7 @@ This property is only available on macOS 10.14 Mojave or newer.
      * TouchBarLabel
      */
     constructor(options: TouchBarLabelConstructorOptions);
+    accessibilityLabel: string;
     label: string;
     textColor: string;
   }
@@ -7157,8 +7353,8 @@ This property is only available on macOS 10.14 Mojave or newer.
     continuous: boolean;
     items: ScrubberItem[];
     mode: ('fixed' | 'free');
-    overlayStyle: ('background' | 'outline' | 'null');
-    selectedStyle: ('background' | 'outline' | 'null');
+    overlayStyle: ('background' | 'outline' | 'none');
+    selectedStyle: ('background' | 'outline' | 'none');
     showArrowButtons: boolean;
   }
 
@@ -7607,6 +7803,15 @@ This property is only available on macOS 10.14 Mojave or newer.
      */
     displayBalloon(options: DisplayBalloonOptions): void;
     /**
+     * Returns focus to the taskbar notification area. Notification area icons should
+     * use this message when they have completed their UI operation. For example, if
+     * the icon displays a shortcut menu, but the user presses ESC to cancel it, use
+     * `tray.focus()` to return focus to the notification area.
+     *
+     * @platform win32
+     */
+    focus(): void;
+    /**
      * The `bounds` of this tray icon as `Object`.
      *
      * @platform darwin,win32
@@ -7637,6 +7842,12 @@ The `position` is only available on Windows, and it is (0, 0) by default.
      * @platform darwin,win32
      */
     popUpContextMenu(menu?: Menu, position?: Point): void;
+    /**
+     * Removes a tray balloon.
+     *
+     * @platform win32
+     */
+    removeBalloon(): void;
     /**
      * Sets the context menu for this icon.
      */
@@ -7827,8 +8038,7 @@ The usage is the same with the `certificate-error` event of `app`.
                                               certificate: Certificate,
                                               callback: (isTrusted: boolean) => void) => void): this;
     /**
-     * Emitted when the associated window logs a console message. Will not be emitted
-     * for windows with *offscreen rendering* enabled.
+     * Emitted when the associated window logs a console message.
      */
     on(event: 'console-message', listener: (event: Event,
                                             level: number,
@@ -8926,7 +9136,7 @@ Calling `event.preventDefault()` will prevent the navigation.
      * describes which part of the page was repainted. If `onlyDirty` is set to `true`,
      * `image` will only contain the repainted area. `onlyDirty` defaults to `false`.
      */
-    beginFrameSubscription(callback: (image: NativeImage, dirtyRect: Rectangle) => void): void;
+    beginFrameSubscription(onlyDirty: boolean, callback: (image: NativeImage, dirtyRect: Rectangle) => void): void;
     /**
      * Begin subscribing for presentation events and captured frames, the `callback`
      * will be called with `callback(image, dirtyRect)` when there is a presentation
@@ -8938,7 +9148,7 @@ Calling `event.preventDefault()` will prevent the navigation.
      * describes which part of the page was repainted. If `onlyDirty` is set to `true`,
      * `image` will only contain the repainted area. `onlyDirty` defaults to `false`.
      */
-    beginFrameSubscription(onlyDirty: boolean, callback: (image: NativeImage, dirtyRect: Rectangle) => void): void;
+    beginFrameSubscription(callback: (image: NativeImage, dirtyRect: Rectangle) => void): void;
     /**
      * Whether the browser can go back to previous web page.
      */
@@ -8981,9 +9191,10 @@ Calling `event.preventDefault()` will prevent the navigation.
     /**
      * Decrease the capturer count by one. The page will be set to hidden or occluded
      * state when its browser window is hidden or occluded and the capturer count
-     * reaches zero.
+     * reaches zero. If you want to decrease the hidden capturer count instead you
+     * should set `stayHidden` to true.
      */
-    decrementCapturerCount(): void;
+    decrementCapturerCount(stayHidden?: boolean): void;
     /**
      * Executes the editing command `delete` in web page.
      */
@@ -9019,6 +9230,13 @@ Code execution will be suspended until web page stop loading.
      */
     executeJavaScript(code: string, userGesture?: boolean): Promise<any>;
     /**
+     * A promise that resolves with the result of the executed code or is rejected if
+     * the result of the code is a rejected promise.
+     * 
+Works like `executeJavaScript` but evaluates `scripts` in an isolated context.
+     */
+    executeJavaScriptInIsolatedWorld(worldId: number, scripts: WebSource[], userGesture?: boolean): Promise<any>;
+    /**
      * The request id used for the request.
      *
      * Starts a request to find all matches for the `text` in the web page. The result
@@ -9030,9 +9248,11 @@ Code execution will be suspended until web page stop loading.
      */
     focus(): void;
     /**
+     * Information about all Shared Workers.
+     */
+    getAllSharedWorkers(): SharedWorkerInfo[];
+    /**
      * If *offscreen rendering* is enabled returns the current frame rate.
-     * 
-**Deprecated**
      */
     getFrameRate(): number;
     /**
@@ -9064,8 +9284,6 @@ Code execution will be suspended until web page stop loading.
     getURL(): string;
     /**
      * The user agent for this web page.
-
-**Deprecated**
      */
     getUserAgent(): string;
     /**
@@ -9074,14 +9292,10 @@ Code execution will be suspended until web page stop loading.
     getWebRTCIPHandlingPolicy(): string;
     /**
      * the current zoom factor.
-
-**Deprecated**
      */
     getZoomFactor(): number;
     /**
      * the current zoom level.
-
-**Deprecated**
      */
     getZoomLevel(): number;
     /**
@@ -9102,11 +9316,12 @@ Code execution will be suspended until web page stop loading.
     goToOffset(offset: number): void;
     /**
      * Increase the capturer count by one. The page is considered visible when its
-     * browser window is hidden and the capturer count is non-zero.
+     * browser window is hidden and the capturer count is non-zero. If you would like
+     * the page to stay hidden, you should ensure that `stayHidden` is set to true.
      * 
 This also affects the Page Visibility API.
      */
-    incrementCapturerCount(size?: Size): void;
+    incrementCapturerCount(size?: Size, stayHidden?: boolean): void;
     /**
      * A promise that resolves with a key for the inserted CSS that can later be used
      * to remove the CSS via `contents.removeInsertedCSS(key)`.
@@ -9132,6 +9347,10 @@ This also affects the Page Visibility API.
      */
     inspectSharedWorker(): void;
     /**
+     * Inspects the shared worker based on its ID.
+     */
+    inspectSharedWorkerById(workerId: string): void;
+    /**
      * Schedules a full repaint of the window this web contents is in.
      *
      * If *offscreen rendering* is enabled invalidates the frame and generates a new
@@ -9140,8 +9359,6 @@ This also affects the Page Visibility API.
     invalidate(): void;
     /**
      * Whether this page has been muted.
-
-**Deprecated**
      */
     isAudioMuted(): boolean;
     /**
@@ -9297,9 +9514,14 @@ An example of `webContents.printToPDF`:
      */
     selectAll(): void;
     /**
-     * Send an asynchronous message to renderer process via `channel`, you can also
-     * send arbitrary arguments. Arguments will be serialized in JSON internally and
-     * hence no functions or prototype chain will be included.
+     * Send an asynchronous message to the renderer process via `channel`, along with
+     * arguments. Arguments will be serialized with the Structured Clone Algorithm,
+     * just like `postMessage`, so prototype chains will not be included. Sending
+     * Functions, Promises, Symbols, WeakMaps, or WeakSets will throw an exception.
+     *
+     * > **NOTE**: Sending non-standard JavaScript types such as DOM objects or special
+     * Electron objects is deprecated, and will begin throwing an exception starting
+     * with Electron 9.
      *
      * The renderer process can handle the message by listening to `channel` with the
      * `ipcRenderer` module.
@@ -9314,8 +9536,14 @@ An example of sending messages from the main process to the renderer process:
     sendInputEvent(inputEvent: (MouseInputEvent) | (MouseWheelInputEvent) | (KeyboardInputEvent)): void;
     /**
      * Send an asynchronous message to a specific frame in a renderer process via
-     * `channel`. Arguments will be serialized as JSON internally and as such no
-     * functions or prototype chains will be included.
+     * `channel`, along with arguments. Arguments will be serialized with the
+     * Structured Clone Algorithm, just like `postMessage`, so prototype chains will
+     * not be included. Sending Functions, Promises, Symbols, WeakMaps, or WeakSets
+     * will throw an exception.
+     *
+     * > **NOTE**: Sending non-standard JavaScript types such as DOM objects or special
+     * Electron objects is deprecated, and will begin throwing an exception starting
+     * with Electron 9.
      *
      * The renderer process can handle the message by listening to `channel` with the
      * `ipcRenderer` module.
@@ -9328,8 +9556,6 @@ You can also read `frameId` from all incoming IPC messages in the main process.
     sendToFrame(frameId: number, channel: string, ...args: any[]): void;
     /**
      * Mute the audio on the current web page.
-
-**Deprecated**
      */
     setAudioMuted(muted: boolean): void;
     /**
@@ -9360,8 +9586,6 @@ An example of showing devtools in a `BrowserWindow`:
     /**
      * If *offscreen rendering* is enabled sets the frame rate to the specified number.
      * Only values between 1 and 60 are accepted.
-
-**Deprecated**
      */
     setFrameRate(fps: number): void;
     /**
@@ -9372,12 +9596,14 @@ An example of showing devtools in a `BrowserWindow`:
     setIgnoreMenuShortcuts(ignore: boolean): void;
     /**
      * Sets the maximum and minimum layout-based (i.e. non-visual) zoom level.
+     * 
+**Deprecated:** This API is no longer supported by Chromium.
+     *
+     * @deprecated
      */
     setLayoutZoomLevelLimits(minimumLevel: number, maximumLevel: number): Promise<void>;
     /**
      * Overrides the user agent for this web page.
-
-**Deprecated**
      */
     setUserAgent(userAgent: string): void;
     /**
@@ -9395,10 +9621,8 @@ An example of showing devtools in a `BrowserWindow`:
     /**
      * Changes the zoom factor to the specified factor. Zoom factor is zoom percent
      * divided by 100, so 300% = 3.0.
-     * 
-The factor must be greater than 0.0.
 
-**Deprecated**
+The factor must be greater than 0.0.
      */
     setZoomFactor(factor: number): void;
     /**
@@ -9406,8 +9630,6 @@ The factor must be greater than 0.0.
      * increment above or below represents zooming 20% larger or smaller to default
      * limits of 300% and 50% of original size, respectively. The formula for this is
      * `scale := 1.2 ^ level`.
-
-**Deprecated**
      */
     setZoomLevel(level: number): void;
     /**
@@ -9500,9 +9722,9 @@ Takes a V8 heap snapshot and saves it to `filePath`.
      *
      * Works like `executeJavaScript` but evaluates `scripts` in an isolated context.
      *
-     * Note that when the execution of script fails, the returned promise will not and
-     * the `result` would be `undefined`. This is because Chromium does not errors of
-     * isolated worlds to foreign worlds.
+     * Note that when the execution of script fails, the returned promise will not
+     * reject and the `result` would be `undefined`. This is because Chromium does not
+     * dispatch errors of isolated worlds to foreign worlds.
      */
     executeJavaScriptInIsolatedWorld(worldId: number, scripts: WebSource[], userGesture?: boolean): Promise<any>;
     /**
@@ -9567,10 +9789,17 @@ This will generate:
     setIsolatedWorldInfo(worldId: number, info: Info): void;
     /**
      * Sets the maximum and minimum layout-based (i.e. non-visual) zoom level.
+     * 
+**Deprecated:** This API is no longer supported by Chromium.
+     *
+     * @deprecated
      */
     setLayoutZoomLevelLimits(minimumLevel: number, maximumLevel: number): void;
     /**
      * Sets a provider for spell checking in input fields and text areas.
+     *
+     * If you want to use this method you must disable the builtin spellchecker when
+     * you construct the window.
      *
      * The `provider` must be an object that has a `spellCheck` method that accepts an
      * array of individual words for spellchecking. The `spellCheck` function runs
@@ -9651,23 +9880,12 @@ The factor must be greater than 0.0.
      * The `listener` will be called with `listener(details)` when a server initiated
      * redirect is about to occur.
      */
-    onBeforeRedirect(listener: ((details: OnBeforeRedirectListenerDetails) => void) | (null)): void;
+    onBeforeRedirect(filter: Filter, listener: ((details: OnBeforeRedirectListenerDetails) => void) | (null)): void;
     /**
      * The `listener` will be called with `listener(details)` when a server initiated
      * redirect is about to occur.
      */
-    onBeforeRedirect(filter: Filter, listener: ((details: OnBeforeRedirectListenerDetails) => void) | (null)): void;
-    /**
-     * The `listener` will be called with `listener(details, callback)` when a request
-     * is about to occur.
-     *
-     * The `uploadData` is an array of `UploadData` objects.
-     *
-     * The `callback` has to be called with an `response` object.
-     * 
-Some examples of valid `urls`:
-     */
-    onBeforeRequest(listener: ((details: OnBeforeRequestListenerDetails, callback: (response: Response) => void) => void) | (null)): void;
+    onBeforeRedirect(listener: ((details: OnBeforeRedirectListenerDetails) => void) | (null)): void;
     /**
      * The `listener` will be called with `listener(details, callback)` when a request
      * is about to occur.
@@ -9679,6 +9897,17 @@ Some examples of valid `urls`:
 Some examples of valid `urls`:
      */
     onBeforeRequest(filter: Filter, listener: ((details: OnBeforeRequestListenerDetails, callback: (response: Response) => void) => void) | (null)): void;
+    /**
+     * The `listener` will be called with `listener(details, callback)` when a request
+     * is about to occur.
+     *
+     * The `uploadData` is an array of `UploadData` objects.
+     *
+     * The `callback` has to be called with an `response` object.
+     * 
+Some examples of valid `urls`:
+     */
+    onBeforeRequest(listener: ((details: OnBeforeRequestListenerDetails, callback: (response: Response) => void) => void) | (null)): void;
     /**
      * The `listener` will be called with `listener(details, callback)` before sending
      * an HTTP request, once the request headers are available. This may occur after a
@@ -9708,11 +9937,11 @@ The `callback` has to be called with a `response` object.
     /**
      * The `listener` will be called with `listener(details)` when an error occurs.
      */
-    onErrorOccurred(listener: ((details: OnErrorOccurredListenerDetails) => void) | (null)): void;
+    onErrorOccurred(filter: Filter, listener: ((details: OnErrorOccurredListenerDetails) => void) | (null)): void;
     /**
      * The `listener` will be called with `listener(details)` when an error occurs.
      */
-    onErrorOccurred(filter: Filter, listener: ((details: OnErrorOccurredListenerDetails) => void) | (null)): void;
+    onErrorOccurred(listener: ((details: OnErrorOccurredListenerDetails) => void) | (null)): void;
     /**
      * The `listener` will be called with `listener(details, callback)` when HTTP
      * response headers of a request have been received.
@@ -9732,13 +9961,13 @@ The `callback` has to be called with a `response` object.
      * response body is received. For HTTP requests, this means that the status line
      * and response headers are available.
      */
-    onResponseStarted(listener: ((details: OnResponseStartedListenerDetails) => void) | (null)): void;
+    onResponseStarted(filter: Filter, listener: ((details: OnResponseStartedListenerDetails) => void) | (null)): void;
     /**
      * The `listener` will be called with `listener(details)` when first byte of the
      * response body is received. For HTTP requests, this means that the status line
      * and response headers are available.
      */
-    onResponseStarted(filter: Filter, listener: ((details: OnResponseStartedListenerDetails) => void) | (null)): void;
+    onResponseStarted(listener: ((details: OnResponseStartedListenerDetails) => void) | (null)): void;
     /**
      * The `listener` will be called with `listener(details)` just before a request is
      * going to be sent to the server, modifications of previous `onBeforeSendHeaders`
@@ -10029,6 +10258,8 @@ Calling `event.preventDefault()` does __NOT__ have any effect.
      *
      * It depends on the `remote` module, it is therefore not available when this
      * module is disabled.
+     *
+     * @deprecated
      */
     getWebContents(): WebContents;
     /**
@@ -10146,7 +10377,7 @@ Calling `event.preventDefault()` does __NOT__ have any effect.
      * 
 Prints `webview`'s web page as PDF, Same as `webContents.printToPDF(options)`.
      */
-    printToPDF(options: PrintToPDFOptions): Promise<Buffer>;
+    printToPDF(options: PrintToPDFOptions): Promise<Uint8Array>;
     /**
      * Executes editing command `redo` in page.
      */
@@ -10198,6 +10429,10 @@ See webContents.sendInputEvent for detailed description of `event` object.
     setAudioMuted(muted: boolean): void;
     /**
      * Sets the maximum and minimum layout-based (i.e. non-visual) zoom level.
+     * 
+**Deprecated:** This API is no longer supported by Chromium.
+     *
+     * @deprecated
      */
     setLayoutZoomLevelLimits(minimumLevel: number, maximumLevel: number): Promise<void>;
     /**
@@ -10370,7 +10605,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
     /**
      * Credit information.
      *
-     * @platform darwin
+     * @platform darwin,win32
      */
     credits?: string;
     /**
@@ -10386,10 +10621,10 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     website?: string;
     /**
-     * Path to the app's icon. Will be shown as 64x64 pixels while retaining aspect
-     * ratio.
+     * Path to the app's icon. On Linux, will be shown as 64x64 pixels while retaining
+     * aspect ratio.
      *
-     * @platform linux
+     * @platform linux,win32
      */
     iconPath?: string;
   }
@@ -10694,8 +10929,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     backgroundColor?: string;
     /**
-     * Whether window should have a shadow. This is only implemented on macOS. Default
-     * is `true`.
+     * Whether window should have a shadow. Default is `true`.
      */
     hasShadow?: boolean;
     /**
@@ -10721,6 +10955,11 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * The style of window title bar. Default is `default`. Possible values are:
      */
     titleBarStyle?: ('default' | 'hidden' | 'hiddenInset' | 'customButtonsOnHover');
+    /**
+     * Set a custom position for the traffic light buttons. Can only be used with
+     * `titleBarStyle` set to `hidden`
+     */
+    trafficLightPosition?: Point;
     /**
      * Shows the title in the title bar in full screen mode on macOS for all
      * `titleBarStyle` options. Default is `false`.
@@ -10773,6 +11012,19 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * The message to display to the user.
      */
     message: string;
+  }
+
+  interface CertificateVerifyProcProcRequest {
+    hostname: string;
+    certificate: Certificate;
+    /**
+     * Verification result from chromium.
+     */
+    verificationResult: string;
+    /**
+     * Error code.
+     */
+    errorCode: number;
   }
 
   interface ClearStorageDataOptions {
@@ -10854,15 +11106,15 @@ See webContents.sendInputEvent for detailed description of `event` object.
     /**
      * The URL associated with the PAC file.
      */
-    pacScript: string;
+    pacScript?: string;
     /**
      * Rules indicating which proxies to use.
      */
-    proxyRules: string;
+    proxyRules?: string;
     /**
      * Rules indicating which URLs should bypass the proxy settings.
      */
-    proxyBypassRules: string;
+    proxyBypassRules?: string;
   }
 
   interface ConsoleMessageEvent extends Event {
@@ -10928,6 +11180,11 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * The misspelled word under the cursor, if any.
      */
     misspelledWord: string;
+    /**
+     * An array of suggested words to show the user to replace the `misspelledWord`.
+     * Only available if there is a misspelled word and spellchecker is enabled.
+     */
+    dictionarySuggestions: string[];
     /**
      * The character encoding of the frame on which the menu was invoked.
      */
@@ -11096,11 +11353,11 @@ See webContents.sendInputEvent for detailed description of `event` object.
     /**
      * Last-Modified header value.
      */
-    lastModified: string;
+    lastModified?: string;
     /**
      * ETag header value.
      */
-    eTag: string;
+    eTag?: string;
     /**
      * Time when download was started in number of seconds since UNIX epoch.
      */
@@ -11162,9 +11419,30 @@ See webContents.sendInputEvent for detailed description of `event` object.
   }
 
   interface DisplayBalloonOptions {
+    /**
+     * Icon to use when `iconType` is `custom`.
+     */
     icon?: (NativeImage) | (string);
+    /**
+     * Can be `none`, `info`, `warning`, `error` or `custom`. Default is `custom`.
+     */
+    iconType?: ('none' | 'info' | 'warning' | 'error' | 'custom');
     title: string;
     content: string;
+    /**
+     * The large version of the icon should be used. Default is `true`. Maps to
+     * `NIIF_LARGE_ICON`.
+     */
+    largeIcon?: boolean;
+    /**
+     * Do not play the associated sound. Default is `false`. Maps to `NIIF_NOSOUND`.
+     */
+    noSound?: boolean;
+    /**
+     * Do not display the balloon notification if the current user is in "quiet time".
+     * Default is `false`. Maps to `NIIF_RESPECT_QUIET_TIME`.
+     */
+    respectQuietTime?: boolean;
   }
 
   interface EnableNetworkEmulationOptions {
@@ -11237,6 +11515,15 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * Accepts several other intra-word matches, defaults to `false`.
      */
     medialCapitalAsWordStart?: boolean;
+  }
+
+  interface FocusOptions {
+    /**
+     * Make the receiver the active app even if another app is currently active.
+     *
+     * @platform darwin
+     */
+    steal: boolean;
   }
 
   interface FoundInPageEvent extends Event {
@@ -11330,6 +11617,10 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     isAutoRepeat: boolean;
     /**
+     * Equivalent to KeyboardEvent.isComposing.
+     */
+    isComposing: boolean;
+    /**
      * Equivalent to KeyboardEvent.shiftKey.
      */
     shift: boolean;
@@ -11368,7 +11659,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
     /**
      * The image must be non-empty on macOS.
      */
-    icon: NativeImage;
+    icon: (NativeImage) | (string);
   }
 
   interface JumpListSettings {
@@ -11487,7 +11778,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * Will be called with `click(menuItem, browserWindow, event)` when the menu item
      * is clicked.
      */
-    click?: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void;
+    click?: (menuItem: MenuItem, browserWindow: (BrowserWindow) | (undefined), event: KeyboardEvent) => void;
     /**
      * Can be `undo`, `redo`, `cut`, `copy`, `paste`, `pasteAndMatchStyle`, `delete`,
      * `selectAll`, `reload`, `forceReload`, `toggleDevTools`, `resetZoom`, `zoomIn`,
@@ -11771,6 +12062,12 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     hasReply?: boolean;
     /**
+     * The timeout duration of the notification. Can be 'default' or 'never'.
+     *
+     * @platform linux,win32
+     */
+    timeoutType?: ('default' | 'never');
+    /**
      * The placeholder to write in the inline reply input field.
      *
      * @platform darwin
@@ -11782,6 +12079,12 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * @platform darwin
      */
     sound?: string;
+    /**
+     * The urgency level of the notification. Can be 'normal', 'critical', or 'low'.
+     *
+     * @platform linux
+     */
+    urgency?: ('normal' | 'critical' | 'low');
     /**
      * Actions to add to the notification. Please read the available actions and
      * limitations in the `NotificationAction` documentation.
@@ -11938,7 +12241,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * Contains which features the dialog should use. The following values are
      * supported:
      */
-    properties?: Array<'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory'>;
+    properties?: Array<'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory' | 'dontAddToRecent'>;
     /**
      * Message to display above input boxes.
      *
@@ -11986,7 +12289,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * Contains which features the dialog should use. The following values are
      * supported:
      */
-    properties?: Array<'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory'>;
+    properties?: Array<'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory' | 'dontAddToRecent'>;
     /**
      * Message to display above input boxes.
      *
@@ -12184,19 +12487,6 @@ See webContents.sendInputEvent for detailed description of `event` object.
     corsEnabled?: boolean;
   }
 
-  interface ProcRequest {
-    hostname: string;
-    certificate: Certificate;
-    /**
-     * Verification result from chromium.
-     */
-    verificationResult: string;
-    /**
-     * Error code.
-     */
-    errorCode: number;
-  }
-
   interface ProgressBarOptions {
     /**
      * Mode for the progress bar. Can be `none`, `normal`, `indeterminate`, `error` or
@@ -12246,8 +12536,8 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     height?: number;
     /**
-     * The desired quality of the resize image. Possible values are `good`, `better` or
-     * `best`. The default is `best`. These values express a desired quality/speed
+     * The desired quality of the resize image. Possible values are `good`, `better`,
+     * or `best`. The default is `best`. These values express a desired quality/speed
      * tradeoff. They are translated into an algorithm-specific method that depends on
      * the capabilities (CPU, GPU) of the underlying platform. It is possible for all
      * three methods to be mapped to the same algorithm on a given platform.
@@ -12320,6 +12610,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * @platform darwin
      */
     showsTagField?: boolean;
+    properties?: Array<'showHiddenFiles' | 'createDirectory' | 'treatPackageAsDirectory' | 'showOverwriteConfirmation' | 'dontAddToRecent'>;
     /**
      * Create a security scoped bookmark when packaged for the Mac App Store. If this
      * option is enabled and the file doesn't already exist a blank file will be
@@ -12379,6 +12670,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      * @platform darwin
      */
     showsTagField?: boolean;
+    properties?: Array<'showHiddenFiles' | 'createDirectory' | 'treatPackageAsDirectory' | 'showOverwriteConfirmation' | 'dontAddToRecent'>;
     /**
      * Create a security scoped bookmark when packaged for the Mac App Store. If this
      * option is enabled and the file doesn't already exist a blank file will be
@@ -12505,6 +12797,10 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     label?: string;
     /**
+     * A short description of the button for use by screenreaders like VoiceOver.
+     */
+    accessibilityLabel?: string;
+    /**
      * Button background color in hex format, i.e `#ABCDEF`.
      */
     backgroundColor?: string;
@@ -12513,7 +12809,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     icon?: (NativeImage) | (string);
     /**
-     * Can be `left`, `right` or `overlay`.
+     * Can be `left`, `right` or `overlay`. Defaults to `overlay`.
      */
     iconPosition?: ('left' | 'right' | 'overlay');
     /**
@@ -12555,6 +12851,10 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     label?: string;
     /**
+     * A short description of the button for use by screenreaders like VoiceOver.
+     */
+    accessibilityLabel?: string;
+    /**
      * Hex color of text, i.e `#ABCDEF`.
      */
     textColor?: string;
@@ -12572,7 +12872,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
     /**
      * Items to display in the popover.
      */
-    items?: TouchBar;
+    items: TouchBar;
     /**
      * `true` to display a close button on the left of the popover, `false` to not show
      * it. Default is `true`.
@@ -12594,21 +12894,23 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     highlight?: (highlightedIndex: number) => void;
     /**
-     * Selected item style. Defaults to `null`.
+     * Selected item style. Can be `background`, `outline` or `none`. Defaults to
+     * `none`.
      */
-    selectedStyle?: string;
+    selectedStyle?: ('background' | 'outline' | 'none');
     /**
-     * Selected overlay item style. Defaults to `null`.
+     * Selected overlay item style. Can be `background`, `outline` or `none`. Defaults
+     * to `none`.
      */
-    overlayStyle?: string;
+    overlayStyle?: ('background' | 'outline' | 'none');
     /**
      * Defaults to `false`.
      */
     showArrowButtons?: boolean;
     /**
-     * Defaults to `free`.
+     * Can be `fixed` or `free`. The default is `free`.
      */
-    mode?: string;
+    mode?: ('fixed' | 'free');
     /**
      * Defaults to `true`.
      */
@@ -12630,7 +12932,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
     segments: SegmentedControlSegment[];
     /**
      * The index of the currently selected segment, will update automatically with user
-     * interaction. When the mode is multiple it will be the last selected item.
+     * interaction. When the mode is `multiple` it will be the last selected item.
      */
     selectedIndex?: number;
     /**
@@ -12701,7 +13003,7 @@ See webContents.sendInputEvent for detailed description of `event` object.
 
   interface VisibleOnAllWorkspacesOptions {
     /**
-     * Sets whether the window should be visible above fullscreen windows
+     * Sets whether the window should be visible above fullscreen windows _deprecated_
      *
      * @platform darwin
      */
@@ -12758,6 +13060,14 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     duplexMode?: ('simplex' | 'shortEdge' | 'longEdge');
     dpi?: Dpi;
+    /**
+     * String to be printed as page header.
+     */
+    header?: string;
+    /**
+     * String to be printed as page footer.
+     */
+    footer?: string;
   }
 
   interface WebviewTagPrintOptions {
@@ -13095,6 +13405,11 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     safeDialogsMessage?: string;
     /**
+     * Whether to disable dialogs completely. Overrides `safeDialogs`. Default is
+     * `false`.
+     */
+    disableDialogs?: boolean;
+    /**
      * Whether dragging and dropping a file or link onto the page causes a navigation.
      * Default is `false`.
      */
@@ -13111,9 +13426,22 @@ See webContents.sendInputEvent for detailed description of `event` object.
      */
     disableHtmlFullscreenWindowResize?: boolean;
     /**
+     * An alternative title string provided only to accessibility tools such as screen
+     * readers. This string is not directly visible to users.
+     */
+    accessibleTitle?: string;
+    /**
+     * Whether to enable the builtin spellchecker. Default is `false`.
+     */
+    spellcheck?: boolean;
+    /**
      * Whether to enable the WebSQL api. Default is `true`.
      */
     enableWebSQL?: boolean;
+    /**
+     * Enforces the v8 code caching policy used by blink. Accepted values are
+     */
+    v8CacheOptions?: ('none' | 'code' | 'bypassHeatCheck' | 'bypassHeatCheckAndEagerCompile');
   }
 
   interface DefaultFontFamily {
